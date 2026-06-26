@@ -1687,6 +1687,10 @@ get_dns_cert_standard (const char *name, int want_certtype,
           dlen = buf16_to_u16 (pt);
           pt += 2;
 
+          /* Malformed packet, ignore */
+          if (pt + dlen > emsg)
+            break;
+
           /* Check the type and parse.  */
           if (want_certtype >= DNS_CERTTYPE_RRBASE
               && type == (want_certtype - DNS_CERTTYPE_RRBASE)
