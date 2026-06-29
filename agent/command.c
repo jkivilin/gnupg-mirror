@@ -2958,7 +2958,8 @@ cmd_import_key (assuan_context_t ctx, char *line)
       goto leave;
     }
 
-  if (opt_unattended && keydata_type != KEYDATA_PGP_TRANSFER)
+  if (opt_unattended && keydata_type != KEYDATA_PGP_TRANSFER
+                     && keydata_type != KEYDATA_COMPOSITE)
     {
       err = set_error (GPG_ERR_ASS_PARAMETER,
                        "\"--unattended\" may only be used with OpenPGP keys");

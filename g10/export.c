@@ -2052,10 +2052,10 @@ do_export_one_keyblock (ctrl_t ctrl, kbnode_t keyblock, u32 *keyid,
               /* Dual key with two keygrips needs a special case.  For
                * example, we may have one key on card and the other on
                * disk or even both on disk or both on card.  There are
-               * two many combinations and thus we resort to using
+               * too many combinations and thus we resort to using
                * mode1003 which stores both s-expression received from
                * gpg-agent in the OpenPGP format (the special 1003
-               * mode).  That means that they stub is also stored.  We
+               * mode).  That means that a stub is also stored.  We
                * do this even if both keys are on card.  */
               struct seckey_info *ski;
 
