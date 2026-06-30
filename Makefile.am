@@ -46,6 +46,7 @@ EXTRA_DIST = build-aux/config.rpath build-aux/potomo autogen.sh autogen.rc \
              COPYING.CC0 COPYING.other                      \
 	     build-aux/git-log-fix build-aux/git-log-footer \
 	     build-aux/getswdb.sh                           \
+	     build-aux/mk-sbom.sh                           \
 	     build-aux/speedo.mk                            \
              build-aux/speedo/zlib.pc			    \
              build-aux/speedo/w32/inst-options.ini	    \

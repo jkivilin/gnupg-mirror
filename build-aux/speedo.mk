@@ -317,7 +317,8 @@ endif
 endif
 
 # Version numbers of the released packages
-gnupg_ver_this = $(shell cat $(topsrc)/VERSION)
+gnupg_ver_this  = $(shell sed -n 1p $(topsrc)/VERSION)
+gnupg_commit_id = $(shell sed -n 2p $(topsrc)/VERSION)
 
 gnupg_ver        := $(shell awk '$$1=="gnupg26_ver" {print $$2}' swdb.lst)
 
@@ -845,6 +846,8 @@ $(stampdir)/stamp-$(1)-00-unpack: $(stampdir)/stamp-directories
 	     *.xz) pretar=xzcat ;;                     	\
              *) pretar=cat ;;				\
            esac;					\
+	   base=`echo "$$$${tar}" | sed -e 's,^.*/,,'   \
+                 | sed -e 's,\.tar.*$$$$,,'`;		\
            [ -f tmp.tgz ] && rm tmp.tgz;                \
            case "$$$${tar}" in				\
 	     /*) $$$${pretar} < $$$${tar} | tar xf - ;;	\
@@ -873,19 +876,28 @@ $(stampdir)/stamp-$(1)-00-unpack: $(stampdir)/stamp-directories
                echo "speedo: Warning: No checksum known for $(1)";\
                echo "speedo:";                          \
              fi;                                        \
+	     $(topsrc)/build-aux/mk-sbom.sh             \
+		  --name="$$$${base}"                   \
+		  --uncompressor="$$$${pretar}"         \
+                  tmp.tgz >>$(sdir)/pkgversioninfo.raw; \
 	     rm tmp.tgz;                                \
+           else                                         \
+	     $(topsrc)/build-aux/mk-sbom.sh             \
+                  $$$${tar} >>$(sdir)/pkgversioninfo.raw; \
            fi;                                          \
-	   base=`echo "$$$${tar}" | sed -e 's,^.*/,,'   \
-                 | sed -e 's,\.tar.*$$$$,,'`;		\
 	   mv $$$${base} $(1);				\
 	   patch="$(patdir)/$(1)-$$$${base#$(1)-}.patch";\
 	   patchx="$(patdir)/$(1).patch";               \
 	   if [ -x "$$$${patch}" ]; then  		\
              echo "speedo: applying patch $$$${patch}"; \
              cd $(1); "$$$${patch}"; 	 		\
+	     $(topsrc)/build-aux/mk-sbom.sh --patch     \
+                  $$$${patch} >>$(sdir)/pkgversioninfo.raw; \
 	   elif [ -x "$$$${patchx}" ]; then  		\
              echo "speedo: applying patch $$$${patchx}";\
              cd $(1); "$$$${patchx}"; 	 		\
+	     $(topsrc)/build-aux/mk-sbom.sh --patch     \
+                  $$$${patchx} >>$(sdir)/pkgversioninfo.raw; \
 	   elif [ -f "$$$${patch}" ]; then  		\
              echo "speedo: warning: $$$${patch} is not executable"; \
 	   fi;						\
@@ -1092,13 +1104,30 @@ endif
 $(stampdir)/stamp-final: $(addprefix $(stampdir)/stamp-final-,$(speedo_build_list))
 	touch $(stampdir)/stamp-final
 
+# clean the version info files
 clean-pkg-versions:
         @: >$(bdir)/pkg-versions.txt
+        @: >$(sdir)/pkgversioninfo.raw
+        @: >$(bdir)/pkgversioninfo.txt
 
-all-speedo: $(stampdir)/stamp-final
+
+# Sort the file with the package versions (new style).
+$(bdir)/pkgversioninfo.txt: $(sdir)/pkgversioninfo.raw
+	set -e; \
+	( while read a b c; do echo "$$a $$b $$c"; \
+            done < $(sdir)/pkgversioninfo.raw \
+          | sort -k2 -sf | tac | uniq -f1 ; \
+          printf '%040d gnupg-%s %s\n' 0 $(gnupg_ver_this) $(gnupg_commit_id); \
+          echo '# Package version infos: SHA-1, name, commit-id' \
+         ) | tac | awk '{printf "%s\r\n", $$0}' > $(bdir)/pkgversioninfo.txt
+
+
+all-speedo: $(stampdir)/stamp-final $(bdir)/pkgversioninfo.txt
 ifneq ($(TARGETOS),w32)
 	@(set -e;\
 	 cd "$(idir)"; \
+         [ ! -d share/gnupg ] && $(MKDIR) -p share/gnupg ;\
+	 cp "$(bdir)/pkgversioninfo.txt" share/gnupg/ ; \
          echo "speedo: Making RPATH relative";\
          for d in bin sbin libexec lib; do \
            for f in $$(find $$d -type f); do \
@@ -1188,7 +1217,7 @@ dist-source: installer
 	 [ -f "$$tarname" ] && rm "$$tarname" ;\
          tar -C $(topsrc) -cf "$$tarname" --exclude-backups --exclude-vcs \
              --transform='s,^\./,$(INST_NAME)-$(INST_VERSION)/,' \
-             --anchored --exclude './PLAY' . ;\
+             --anchored --exclude './PLAY' --exclude './autom4te.cache' . ;\
 	 tar --totals -rf "$$tarname" --exclude-backups --exclude-vcs \
               --transform='s,^,$(INST_NAME)-$(INST_VERSION)/,' \
               --exclude='*.[ao]' \
@@ -1238,7 +1267,8 @@ $(bdir)/inst-options.ini: $(w32src)/inst-options.ini
 extra_installer_options =
 
 # Note that we sign only when doing the final installer.
-installer: all w32_insthelpers $(w32src)/inst-options.ini $(bdir)/README.txt
+installer: all w32_insthelpers $(w32src)/inst-options.ini $(bdir)/README.txt \
+           $(bdir)/pkgversioninfo.txt
 	(set -e;\
 	 cd "$(idir)"; \
 	 if echo "$(idir)" | grep -q '/PLAY-release/' ; then \

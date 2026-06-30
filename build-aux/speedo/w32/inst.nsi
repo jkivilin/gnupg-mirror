@@ -674,6 +674,7 @@ Section "GnuPG" SEC_gnupg
 
   SetOutPath "$INSTDIR\share\gnupg"
   File "share/gnupg/distsigkey.gpg"
+  File "${BUILD_DIR}/pkgversioninfo.txt"
   File /nonfatal "share/gnupg/help.txt"
   File /nonfatal "share/gnupg/help.de.txt"
   File /nonfatal "share/gnupg/help.fr.txt"
