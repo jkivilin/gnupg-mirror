@@ -1,10 +1,46 @@
-Noteworthy changes in version 2.5.21 (unreleased)
+Noteworthy changes in version 2.5.21 (2026-07-02)
 -------------------------------------------------
 
  * New and extended features:
 
+   - gpg, gpgsm: Use partial file on decryption, remove on failure.
+     Disable with "--compatibility-flags=no-partial-file-guard".
+     [T7873]
+
+   - gpg: Use the INT_RCP_FPR subpacket in revocation signatures.
+     [T8252]
+
+   - Create a pkgversioninfo.txt file when building using the speedo
+     build system.
+
  * Bug fixes:
 
+   - gpg: Fix potential use-after-free in batch key generation when
+     handling the keyserver URL option.  [T8277]
+
+   - gpgsm: Fix regression in gpgsm_verify with expired certificates.
+     [T8188]
+
+   - gpgsm: Require a minimum tag length for GCM decryption.
+     [rG4c7e68cf3d, CVE-2026-34182]
+
+   - scd: Limit the size of returned APDU objects from faulty cards.
+     [T8281]
+
+   - scd: Fix condition to retrieve ATR.  [rGca25a7a61b]
+
+   - scd:openpgp: Fix regression in CHV1 retry counter byte index.
+     [rG245330ebea]
+
+   - agent: Make batch import of Kyber keys work.  [T8029]
+
+   - dirmngr: Add a validation check in get_dns_cert_standard.
+     [T8303]
+
+   - gpgconf: Raise an error on certain parse errors.  [T8261]
+
+   - Fix use of usleep in file remove function on Windows.  Regression
+     since 2.5.13.  [rGab9ce5f5e7]
 
  Release-info: https://dev.gnupg.org/T8262
 
