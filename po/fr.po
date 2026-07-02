@@ -3063,6 +3063,16 @@ msgstr "L'identité n'est plus valable"
 msgid "reason for revocation: "
 msgstr "cause de révocation : "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "clef %s : impossible de trouver le bloc de clef d'origine : %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "clef %s : impossible de lire le bloc de clef d'origine : %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5191,6 +5201,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "hachage faible « %s » inconnu\n"
 
+#, fuzzy, c-format
+#| msgid "Note: old default options file '%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "Remarque : l'ancien fichier d'options par défaut « %s » a été ignoré\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "Le fichier « %s » existe. "
@@ -5967,6 +5982,13 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "la signature de la clef %s est supposée être fausse car un bit\n"
 "critique est inconnu\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"clef %s : pas de clef publique — impossible d'appliquer le certificat\n"
+"          de révocation\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7726,6 +7748,11 @@ msgstr "importation des certificats commun « %s »\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "impossible de signer en utilisant « %s » : %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "impossible d'ouvrir le descripteur %d : %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9677,10 +9704,6 @@ msgstr "gérer l'historique des commandes"
 
 #~ msgid "LDAP server list"
 #~ msgstr "liste de serveurs LDAP"
-
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr ""
-#~ "Remarque : l'ancien fichier d'options par défaut « %s » a été ignoré\n"
 
 #~ msgid ""
 #~ "@\n"

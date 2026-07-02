@@ -3077,6 +3077,16 @@ msgstr "Bruker-ID er ikke lenger gyldig"
 msgid "reason for revocation: "
 msgstr "grunnen for opphevelse: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "nøkkel %s: finner ikke original nøkkelblokk: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "nøkkel %s: klarte ikke å lese opprinnelig nøkkelblokk: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5188,6 +5198,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "«%s» er en ukjent svak summeringsmetode\n"
 
+#, fuzzy, c-format
+#| msgid "Note: old default options file '%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "Merk: gammel standardvalgfil «%s» ble ignorert\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "Fila «%s» finnes. "
@@ -5934,6 +5949,13 @@ msgstr "separat signatur av klasse 0x%02x\n"
 #, c-format
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr "antatt ugyldig signatur fra nøkkel %s pga. ukjent «kritisk»-bit\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"nøkkel %s: offentlig nøkkel mangler. Klarte ikke å bruke "
+"opphevelsessertifikat\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7637,6 +7659,11 @@ msgstr "importerer sertifikat «%s»\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "klarte ikke å signere med «%s»: %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "klarte ikke å åpne fd %d: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9526,9 +9553,6 @@ msgstr ""
 
 #~ msgid "LDAP server list"
 #~ msgstr "LDAP-tjenerliste"
-
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "Merk: gammel standardvalgfil «%s» ble ignorert\n"
 
 #~ msgid ""
 #~ "@\n"

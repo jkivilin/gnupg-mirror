@@ -3168,6 +3168,14 @@ msgid "reason for revocation: "
 msgstr "αιτία για ανάκληση:"
 
 #, fuzzy, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "κλειδί %08lX: αδυναμία εντοπισμού του αρχικού τμήματος κλειδιού: %s\n"
+
+#, fuzzy, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "κλειδί %08lX: αδυναμία ανάγνωσης του αρχικού τμήματος κλειδιού: %s\n"
+
+#, fuzzy, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
 "κλειδί %08lX: όχι δημόσιο κλειδί - αδυναμία εφαρμογής πιστοποιητικού "
@@ -5383,6 +5391,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "άγνωστη κλάση υπογραφής"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "ΣΗΜΕΙΩΣΗ: αγνοήθηκε το παλιό αρχείο προκαθορισμένων επιλογών `%s'\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "Το αρχείο `%s' υπάρχει ήδη. "
@@ -6143,6 +6156,12 @@ msgstr "ανεξάρτητη υπογραφή κλάσης 0x%02x\n"
 #, fuzzy, c-format
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr "υπόθεση κακής υπογραφής από κλειδί %08lX λόγω άγνωστου κρίσιμου bit\n"
+
+#, fuzzy, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"κλειδί %08lX: όχι δημόσιο κλειδί - αδυναμία εφαρμογής πιστοποιητικού "
+"ανάκλησης\n"
 
 #, fuzzy, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7885,6 +7904,10 @@ msgstr "εγγραφή στο  `%s'\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "αδυναμία κλεισίματος του `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "αδυναμία πρόσβασης του αρχείου: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9707,11 +9730,6 @@ msgstr ""
 #~ msgstr "Τερματισμός χωρίς αποθήκευση; "
 
 #, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "ΣΗΜΕΙΩΣΗ: αγνοήθηκε το παλιό αρχείο προκαθορισμένων επιλογών `%s'\n"
-
-#, fuzzy
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -11329,10 +11347,6 @@ msgstr ""
 
 #~ msgid "sorry, can't do this in batch mode\n"
 #~ msgstr "συγνώμη, δεν μπορεί να γίνει αυτό σε κατάσταση δέσμης (batchmode)\n"
-
-#, fuzzy
-#~ msgid "can't open file `%s': %s\n"
-#~ msgstr "αδυναμία πρόσβασης του αρχείου: %s\n"
 
 #~ msgid "key %08lX: key has been revoked!\n"
 #~ msgstr "κλειδί %08lX: το κλειδί έχει ανακληθεί!\n"

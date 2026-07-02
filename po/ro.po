@@ -3232,6 +3232,16 @@ msgstr "ID utilizator nu mai este valid"
 msgid "reason for revocation: "
 msgstr "motiv pentru revocare: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "cheia %s: nu pot găsi keyblock-ul original: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "cheia %s: nu pot citi keyblock-ul original: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5421,6 +5431,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "Tip de semnătură necunoscut `%s'\n"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "NOTĂ: fisier opţiuni implicite vechi `%s' ignorat\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "Fişierul `%s' există. "
@@ -6198,6 +6213,12 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "presupun semnătură incorectă din cheia %s datorită unui bit critic "
 "necunoscut\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"cheia %s: nici o cheie publică - nu pot aplica certificatul de revocare\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7957,6 +7978,10 @@ msgstr "eroare la obţinerea numărului serial: %s\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "nu pot accesa `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "nu pot deschide `%s': %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9813,11 +9838,6 @@ msgstr ""
 #~| msgid "Quit without saving? (y/N) "
 #~ msgid "run without asking a user"
 #~ msgstr "Terminaţi fără a salva?  (d/N) "
-
-#, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "NOTĂ: fisier opţiuni implicite vechi `%s' ignorat\n"
 
 #, fuzzy
 #~ msgid ""

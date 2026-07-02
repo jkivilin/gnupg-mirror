@@ -2992,6 +2992,16 @@ msgstr "Kullanıcı kimliği artık geçersiz"
 msgid "reason for revocation: "
 msgstr "yürürlükten kaldırma sebebi: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "%s anahtarı: Özgün anahtar bloku bulunamadı: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "%s anahtarı: Özgün anahtar bloku okunamadı: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5087,6 +5097,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "bilinmeyen zayıf özet '%s'\n"
 
+#, fuzzy, c-format
+#| msgid "new cache dir file '%s' created\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "yeni önbellek dizin dosyası '%s' oluşturuldu\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "'%s' dosyası var. "
@@ -5815,6 +5830,13 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "kötü imzanın bilinmeyen bir kritik bitten dolayı %s anahtarından "
 "kaynaklandığı varsayılıyor\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"%s anahtarı: Genel anahtar değil - yürürlükten kaldırma sertifikası "
+"uygulanamaz\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7507,6 +7529,11 @@ msgstr "'%s' ortak sertifikaları içe aktarılıyor\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "'%s' kullanarak imzalanamıyor: %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "fd %d açılamıyor: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"

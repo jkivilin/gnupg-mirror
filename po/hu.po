@@ -3153,6 +3153,14 @@ msgid "reason for revocation: "
 msgstr "Visszavonás oka: "
 
 #, fuzzy, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "%08lX kulcs: Nem találom az eredeti kulcsblokkot: %s\n"
+
+#, fuzzy, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "%08lX kulcs: Nem tudom beolvasni az eredeti kulcsblokkot: %s\n"
+
+#, fuzzy, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr "%08lX kulcs: Nincs nyilvános kulcs - nem tudok visszavonni.\n"
 
@@ -5343,6 +5351,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "ismeretlen aláírásosztály"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "MEGJEGYZÉS: Figyelmen kívül hagytam a régi opciókat (%s).\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "\"%s\" állomány létezik. "
@@ -6087,6 +6100,10 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "Rossz aláírást feltételezek a %08lX kulcstól egy ismeretlen\n"
 "kritikus bit miatt.\n"
+
+#, fuzzy, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr "%08lX kulcs: Nincs nyilvános kulcs - nem tudok visszavonni.\n"
 
 #, fuzzy, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7830,6 +7847,10 @@ msgstr "Írok a \"%s\" állományba.\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "Nem tudom bezárni a(z) \"%s\" állományt: %s.\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "Nem tudom megnyitni az állományt: %s.\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9647,11 +9668,6 @@ msgstr ""
 #~ msgstr "Kilépjek mentés nélkül? "
 
 #, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "MEGJEGYZÉS: Figyelmen kívül hagytam a régi opciókat (%s).\n"
-
-#, fuzzy
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -11251,10 +11267,6 @@ msgstr ""
 
 #~ msgid "sorry, can't do this in batch mode\n"
 #~ msgstr "Sajnálom, ezt nem tudom megcsinálni kötegelt módban!\n"
-
-#, fuzzy
-#~ msgid "can't open file `%s': %s\n"
-#~ msgstr "Nem tudom megnyitni az állományt: %s.\n"
 
 #~ msgid "key %08lX: key has been revoked!\n"
 #~ msgstr "%08lX kulcs vissza lett vonva!\n"

@@ -3025,6 +3025,16 @@ msgstr "Användaridentiteten är inte längre giltig"
 msgid "reason for revocation: "
 msgstr "anledning för återkallning: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "nyckel %s: kan inte hitta det ursprungliga nyckelblocket: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "nyckel %s: kan inte läsa det ursprungliga nyckelblocket %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5147,6 +5157,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "okänt svagt sammandrag '%s'\n"
 
+#, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "OBS: den gamla inställningsfilen \"%s\" används inte\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "Filen '%s' finns. "
@@ -5890,6 +5905,13 @@ msgstr "felaktig datasignatur från nyckeln %s: %s (0x%02x, 0x%x)\n"
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "antar felaktig signatur från nyckeln %s på grund av en okänd kritisk bit\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"nyckel %s: ingen publik nyckel - kan inte verkställa "
+"återkallningscertifikat\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7605,6 +7627,11 @@ msgstr "importerar vanliga certifikat '%s'\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "kan inte signera med '%s': %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "kan inte öppna fd %d: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9482,11 +9509,6 @@ msgstr "hantera kommandohistoriken"
 
 #~ msgid "LDAP server list"
 #~ msgstr "LDAP-serverlista"
-
-#, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "OBS: den gamla inställningsfilen \"%s\" används inte\n"
 
 #~ msgid ""
 #~ "@\n"

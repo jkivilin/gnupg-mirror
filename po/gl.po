@@ -3160,6 +3160,18 @@ msgid "reason for revocation: "
 msgstr "motivo para a revocación: "
 
 #, fuzzy, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr ""
+"chave %08lX: non foi posible localiza-lo bloque de chaves original:\n"
+"%s\n"
+
+#, fuzzy, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr ""
+"chave %08lX: non foi posible le-lo bloque de chaves original:\n"
+"%s\n"
+
+#, fuzzy, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
 "chave %08lX: non hai chave pública - non se pode aplica-lo\n"
@@ -5376,6 +5388,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "clase de sinatura descoñecida"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "NOTA: ignórase o antigo ficheiro de opcións por defecto `%s'\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "O ficheiro `%s' xa existe. "
@@ -6128,6 +6145,12 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "asumindo unha sinatura incorrecta da chave %08lX debido a un bit crítico "
 "descoñecido\n"
+
+#, fuzzy, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"chave %08lX: non hai chave pública - non se pode aplica-lo\n"
+"certificado de revocación\n"
 
 #, fuzzy, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7877,6 +7900,10 @@ msgstr "escribindo a `%s'\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "non se pode pechar `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "non se puido abrir un ficheiro: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9700,11 +9727,6 @@ msgstr ""
 #~ msgstr "¿Saír sin gardar? "
 
 #, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "NOTA: ignórase o antigo ficheiro de opcións por defecto `%s'\n"
-
-#, fuzzy
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -11319,10 +11341,6 @@ msgstr ""
 
 #~ msgid "sorry, can't do this in batch mode\n"
 #~ msgstr "sentímolo, non se pode facer isto no modo por lotes\n"
-
-#, fuzzy
-#~ msgid "can't open file `%s': %s\n"
-#~ msgstr "non se puido abrir un ficheiro: %s\n"
 
 #~ msgid "key %08lX: key has been revoked!\n"
 #~ msgstr "chave %08lX: ¡esta chave está revocada!\n"

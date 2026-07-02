@@ -3302,6 +3302,16 @@ msgstr "Bruger-id er ikke længere gyldigt"
 msgid "reason for revocation: "
 msgstr "årsag for tilbagekald: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "nøgle %s: kan ikke lokalisere original nøgleblok: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "nøgle %s: kan ikke læse original nøgleblok: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5518,6 +5528,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "Ukendt underskrifttype »%s«\n"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "BEMÆRK: Gammel standardfil for tilvalg »%s« blev ignoreret\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "Filen »%s« findes. "
@@ -6295,6 +6310,12 @@ msgstr "uafhængig underskrift for klasse 0x%02x\n"
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "antager ugyldig underskrift fra nøgle %s på grund af en ukendt kritisk del\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"nøgle %s: ingen offentlig nøgle - kan ikke anvende tilbagekaldscertifikat\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -8089,6 +8110,11 @@ msgstr "importerer gængse certifikater »%s«\n"
 #| msgid "can't sign using `%s': %s\n"
 msgid "can't sign using '%s': %s\n"
 msgstr "kan ikke underskrive med »%s«: %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "kan ikke åbne fd %d: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -10195,11 +10221,6 @@ msgstr ""
 
 #~ msgid "LDAP server list"
 #~ msgstr "LDAP-serverliste"
-
-#, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "BEMÆRK: Gammel standardfil for tilvalg »%s« blev ignoreret\n"
 
 #~ msgid ""
 #~ "@\n"

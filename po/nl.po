@@ -3084,6 +3084,16 @@ msgstr "Gebruikers-ID is niet langer geldig"
 msgid "reason for revocation: "
 msgstr "reden van de intrekking: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "sleutel %s: kan het originele sleutelblok niet vinden: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "sleutel %s: kan het originele sleutelblok niet lezen: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5244,6 +5254,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "onbekende zwakke hash-waarde '%s'\n"
 
+#, fuzzy, c-format
+#| msgid "new cache dir file '%s' created\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "nieuwe map '%s' aangemaakt in de cachemap\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "Bestand '%s' bestaat. "
@@ -5996,6 +6011,13 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "er wordt verondersteld dat de ondertekening van\n"
 "sleutel %s slecht is als gevolg van een onbekende kritieke bit\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"sleutel %s: geen publieke sleutel - kan intrekkingscertificaat niet "
+"toepassen\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7760,6 +7782,11 @@ msgstr "importeren van gemeenschappelijke certificaten '%s'\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "kan niet ondertekenen met '%s': %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "kan bestandsindicator %d niet openen: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"

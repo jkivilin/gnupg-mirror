@@ -3078,6 +3078,16 @@ msgstr "Идентификатор пользователя больше не д
 msgid "reason for revocation: "
 msgstr "причина отзыва: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "ключ %s: оригинальный блок ключей не найден: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "ключ %s: оригинальный блок ключей не читается: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr "ключ %s: нет открытого ключа - не могу применить сертификат отзыва\n"
@@ -5212,6 +5222,11 @@ msgstr "Открытый ключ ECDSA бывает в кодировке SEC, 
 msgid "unknown weak digest '%s'\n"
 msgstr "неизвестный слабый хеш '%s'\n"
 
+#, fuzzy, c-format
+#| msgid "Note: old default options file '%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "Замечание: старый основной файл параметров '%s' проигнорирован\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "Файл '%s' существует. "
@@ -5950,6 +5965,11 @@ msgstr "плохая подпись данных ключом %s: %s (0x%02x 0x%
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "подпись ключа %s считается плохой из-за неизвестного критического бита\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr "ключ %s: нет открытого ключа - не могу применить сертификат отзыва\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7706,6 +7726,11 @@ msgstr "импорт общих сертификатов '%s'\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "невозможно подписать с помощью '%s': %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "не могу открыть fd %d: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9619,9 +9644,6 @@ msgstr ""
 
 #~ msgid "LDAP server list"
 #~ msgstr "Список серверов LDAP"
-
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "Замечание: старый основной файл параметров '%s' проигнорирован\n"
 
 #~ msgid ""
 #~ "@\n"

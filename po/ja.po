@@ -2953,6 +2953,16 @@ msgstr "ユーザIDがもはや有効でありません"
 msgid "reason for revocation: "
 msgstr "失効理由: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "鍵%s: 元の鍵ブロックに位置づけできません: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "鍵%s: 元の鍵ブロックを読み込めません: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr "鍵%s: 公開鍵がありません - 失効証明書を適用できません\n"
@@ -5681,6 +5691,11 @@ msgstr "鍵%sによる不正なデータへの署名: %s (0x%02x, 0x%x)\n"
 #, c-format
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr "不明のクリティカル・ビットのため、鍵%sによる署名を不正とみなします\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr "鍵%s: 公開鍵がありません - 失効証明書を適用できません\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"

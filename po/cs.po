@@ -3032,6 +3032,16 @@ msgstr "Identifikátor uživatele již neplatí"
 msgid "reason for revocation: "
 msgstr "důvod pro revokaci: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "klíč %s: nemohu najít originální blok klíče: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "klíč %s: nemohu číst originální blok klíče: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr "klíč %s: chybí veřejný klíč – nemohu aplikovat revokační certifikát\n"
@@ -5118,6 +5128,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "neznámý slabý hashovací algoritmus „%s“\n"
 
+#, fuzzy, c-format
+#| msgid "Note: old default options file '%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "Poznámka: starý implicitní soubor s možnostmi „%s“ ignorován\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "Soubor „%s“ existuje. "
@@ -5847,6 +5862,11 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "předpokládám špatný podpis klíčem %s, protože je nastaven neznámý kritický "
 "bit\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr "klíč %s: chybí veřejný klíč – nemohu aplikovat revokační certifikát\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7579,6 +7599,11 @@ msgstr "importují se běžné certifikáty „%s“\n"
 msgid "can't sign using '%s': %s\n"
 msgstr "nelze podepsat pomocí „%s“: %s\n"
 
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "nemohu otevřít deskriptor %d: %s\n"
+
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
 msgstr "neplatný příkaz (neexistuje žádný implicitní příkaz)\n"
@@ -9261,9 +9286,6 @@ msgstr "spravuje historii příkazů"
 
 #~ msgid "unable to read external program response: %s\n"
 #~ msgstr "nelze přečíst odpověď externího programu: %s\n"
-
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "Poznámka: starý implicitní soubor s možnostmi „%s“ ignorován\n"
 
 #~ msgid "validate signatures with PKA data"
 #~ msgstr "ověřovat podpisy s daty PKA"

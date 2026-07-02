@@ -2958,6 +2958,16 @@ msgstr "用户标识不再有效"
 msgid "reason for revocation: "
 msgstr "吊销原因： "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "密钥 %s：无法定位原始的密钥区块：%s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "密钥 %s：无法读取原始的密钥区块：%s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr "密钥 %s：没有公钥 - 无法应用吊销证书\n"
@@ -4976,6 +4986,11 @@ msgstr "ECDSA 公钥需要以 8 位的倍数的 SEC 进行编码\n"
 msgid "unknown weak digest '%s'\n"
 msgstr "未知的弱摘要‘%s’\n"
 
+#, fuzzy, c-format
+#| msgid "Note: old default options file '%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "注意：旧的默认配置文件‘%s’已被忽略\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "文件‘%s’已存在。 "
@@ -5667,6 +5682,11 @@ msgstr "损坏的数据签名来自密钥 %s: %s (0x%02x, 0x%x)\n"
 #, c-format
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr "假定密钥 %s 的签名由于某个未知的关键位出错而损坏\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr "密钥 %s：没有公钥 - 无法应用吊销证书\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7294,6 +7314,11 @@ msgstr "正在导入通用证书‘%s’\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "无法使用‘%s’签名：%s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "无法打开 fd %d：%s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9129,9 +9154,6 @@ msgstr "管理命令历史记录"
 
 #~ msgid "LDAP server list"
 #~ msgstr "LDAP 服务器列表"
-
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "注意：旧的默认配置文件‘%s’已被忽略\n"
 
 #~ msgid ""
 #~ "@\n"

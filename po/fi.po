@@ -3173,6 +3173,14 @@ msgid "reason for revocation: "
 msgstr "mitätöinnin syy: "
 
 #, fuzzy, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "avain %08lX: alkuperäistä avainlohkoa ei löydy: %s\n"
+
+#, fuzzy, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "avain %08lX. alkuperäisen avainlohko lukeminen ei onnistu: %s\n"
+
+#, fuzzy, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
 "avain %08lX: ei julkista avainta - mitätöintivarmennetta ei voida käyttää\n"
@@ -5372,6 +5380,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "tuntematon allekirjoitusluokka"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "HUOM: Vanhat oletusarvoiset asetukset löytyvät tiedostosta \"%s\"\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "Tiedosto \"%s\" on olemassa."
@@ -6127,6 +6140,11 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "Epäkelpo allekirjoitus avaimelta %08lX oletettavasti johtuen tuntemattomasta "
 "\"critical bit\":istä\n"
+
+#, fuzzy, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"avain %08lX: ei julkista avainta - mitätöintivarmennetta ei voida käyttää\n"
 
 #, fuzzy, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7867,6 +7885,10 @@ msgstr "kirjoitetaan kohteeseen \"%s\"\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "tiedostoa \"%s\" ei voi sulkea: %s\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "ei voi avata tiedostoa: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9686,11 +9708,6 @@ msgstr ""
 #~ msgstr "Lopeta tallentamatta muutoksia?"
 
 #, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "HUOM: Vanhat oletusarvoiset asetukset löytyvät tiedostosta \"%s\"\n"
-
-#, fuzzy
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -11297,10 +11314,6 @@ msgstr ""
 
 #~ msgid "sorry, can't do this in batch mode\n"
 #~ msgstr "valitan, tätä ei voi tehdä eräajossa\n"
-
-#, fuzzy
-#~ msgid "can't open file `%s': %s\n"
-#~ msgstr "ei voi avata tiedostoa: %s\n"
 
 #~ msgid "key %08lX: key has been revoked!\n"
 #~ msgstr "Avain %08lX: avain on mitätöity!\n"

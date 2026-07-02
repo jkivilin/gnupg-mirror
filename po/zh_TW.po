@@ -2925,6 +2925,16 @@ msgstr "使用者 ID 不再有效了"
 msgid "reason for revocation: "
 msgstr "撤銷原因: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "金鑰 %s: 無法定址原始的金鑰區塊: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "金鑰 %s: 無法讀取原始的金鑰區塊: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr "金鑰 %s: 沒有公鑰 - 無法套用撤銷憑證\n"
@@ -4947,6 +4957,11 @@ msgstr "ECDSA 公鑰應該要是 8 位元倍數的 SEC 編碼\n"
 msgid "unknown weak digest '%s'\n"
 msgstr "未知的弱摘要 '%s'\n"
 
+#, fuzzy, c-format
+#| msgid "Note: old default options file '%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "請注意: 已忽略舊有的預設選項檔 '%s'\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "檔案 '%s' 已存在. "
@@ -5639,6 +5654,11 @@ msgstr "來自金鑰 %s 的不良資料簽章: %s (0x%02x, 0x%x)\n"
 #, c-format
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr "假設金鑰 %s 的損壞簽章導因於某個未知的關鍵位元\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr "金鑰 %s: 沒有公鑰 - 無法套用撤銷憑證\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7261,6 +7281,11 @@ msgstr "正在匯入通用憑證 '%s'\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "無法用 '%s' 來簽署: %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "無法開啟 fd %d: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9107,9 +9132,6 @@ msgstr "管理指令歷史紀錄"
 
 #~ msgid "LDAP server list"
 #~ msgstr "LDAP 伺服器清單"
-
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "請注意: 已忽略舊有的預設選項檔 '%s'\n"
 
 #~ msgid ""
 #~ "@\n"

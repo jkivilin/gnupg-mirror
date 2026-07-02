@@ -3001,6 +3001,16 @@ msgstr "identyfikator użytkownika przestał być poprawny"
 msgid "reason for revocation: "
 msgstr "powód unieważnienia: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "klucz %s: brak oryginalnego bloku klucza; %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "klucz %s: nie można odczytać oryginalnego bloku klucza: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5130,6 +5140,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "nieznany słaby skrót „%s”\n"
 
+#, fuzzy, c-format
+#| msgid "new cache dir file '%s' created\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "nowy plik katalogu pamięci podręcznej „%s” został utworzony\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "Plik „%s” istnieje. "
@@ -5874,6 +5889,13 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "uznano za zły podpis utworzony kluczem %s z powodu nieznanego bitu "
 "krytycznego\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"klucz %s: brak klucza publicznego, którego dotyczy wczytany certyfikat\n"
+"              unieważnienia\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7612,6 +7634,11 @@ msgstr "import wspólnych certyfikatów „%s”\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "nie można podpisać z użyciem „%s”: %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "nie można otworzyć fd %d: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"

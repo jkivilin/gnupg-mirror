@@ -3054,6 +3054,16 @@ msgstr "A ID de utilizador já não é válida"
 msgid "reason for revocation: "
 msgstr "motivo da revogação: "
 
+#, fuzzy, c-format
+#| msgid "key %s: can't locate original keyblock: %s\n"
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "chave %s: não é possível localizar o keyblock original: %s\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: can't read original keyblock: %s\n"
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "chave %s: não é possível ler o keyblock original: %s\n"
+
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
@@ -5145,6 +5155,11 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "digest '%s' fraco e desconhecido\n"
 
+#, fuzzy, c-format
+#| msgid "new cache dir file '%s' created\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "novo ficheiro '%s' da pasta de cache criado\n"
+
 #, c-format
 msgid "File '%s' exists. "
 msgstr "O ficheiro '%s' existe. "
@@ -5874,6 +5889,13 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "assumindo assinatura inválida da chave %s devido a um bit crítico "
 "desconhecido\n"
+
+#, fuzzy, c-format
+#| msgid "key %s: no public key - can't apply revocation certificate\n"
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"chave %s: nenhuma chave pública - não é possível aplicar certificado de "
+"revogação\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7577,6 +7599,11 @@ msgstr "importando certificados comuns '%s'\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "não é possível assinar usando '%s': %s\n"
+
+#, fuzzy, c-format
+#| msgid "can't open fd %d: %s\n"
+msgid "can't open outputfile: %s\n"
+msgstr "não é possível abrir fd %d: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"

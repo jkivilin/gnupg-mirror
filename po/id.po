@@ -3158,6 +3158,14 @@ msgid "reason for revocation: "
 msgstr "Alasan pembatalan:"
 
 #, fuzzy, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "kunci %08lX: tidak dapat menemukan keyblock orisinal: %s\n"
+
+#, fuzzy, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "kunci %08lX: tidak dapat membaca keyblok orisinal: %s\n"
+
+#, fuzzy, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
 "kunci %08lX: tdk ada kunci publik-tdk dpt mengaplikasikan sertifikat "
@@ -5346,6 +5354,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "kelas signature tidak dikenal"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "CATATAN: file pilihan baku lama `%s' diabaikan\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "File `%s' ada. "
@@ -6091,6 +6104,12 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "mengasumsikan signature buruk dari kunci %08lX karena ada bit kritik tidak "
 "dikenal\n"
+
+#, fuzzy, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"kunci %08lX: tdk ada kunci publik-tdk dpt mengaplikasikan sertifikat "
+"pembatalan\n"
 
 #, fuzzy, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7829,6 +7848,10 @@ msgstr "menulis ke `%s'\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "tidak dapat menutup `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "tidak dapat membuka file: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9645,11 +9668,6 @@ msgstr ""
 #~ msgstr "Berhenti tanpa menyimpan? "
 
 #, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "CATATAN: file pilihan baku lama `%s' diabaikan\n"
-
-#, fuzzy
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -11254,10 +11272,6 @@ msgstr ""
 
 #~ msgid "sorry, can't do this in batch mode\n"
 #~ msgstr "maaf, tidak dapat melakukan hal ini dalam mode batch\n"
-
-#, fuzzy
-#~ msgid "can't open file `%s': %s\n"
-#~ msgstr "tidak dapat membuka file: %s\n"
 
 #~ msgid "key %08lX: key has been revoked!\n"
 #~ msgstr "kunci %08lX: kunci telah dibatalkan!\n"

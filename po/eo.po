@@ -3141,6 +3141,14 @@ msgid "reason for revocation: "
 msgstr "Kialo por revoko: "
 
 #, fuzzy, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "ŝlosilo %08lX: ne povas trovi originalan ŝlosilblokon: %s\n"
+
+#, fuzzy, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "ŝlosilo %08lX: ne povas legi originalan ŝlosilblokon: %s\n"
+
+#, fuzzy, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
 "ŝlosilo %08lX: publika ŝlosilo mankas - ne povas apliki revokatestilon\n"
@@ -5338,6 +5346,10 @@ msgid "unknown weak digest '%s'\n"
 msgstr "nekonata klaso de subskribo"
 
 #, fuzzy, c-format
+msgid "Note: partial file '%s' removed\n"
+msgstr "NOTO: mankas implicita opcio-dosiero '%s'\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "Dosiero '%s' ekzistas. "
@@ -6062,6 +6074,11 @@ msgstr "memstara subskribo de klaso 0x%02x\n"
 #, fuzzy, c-format
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr "supozas malbonan subskribon pro nekonata \"critical bit\"\n"
+
+#, fuzzy, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"ŝlosilo %08lX: publika ŝlosilo mankas - ne povas apliki revokatestilon\n"
 
 #, fuzzy, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7798,6 +7815,10 @@ msgstr "skribas al '%s'\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "ne povas fermi '%s': %s\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "ne povas malfermi %s: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9589,10 +9610,6 @@ msgstr ""
 #~ msgstr "Ĉu fini sen skribi ŝanĝojn? "
 
 #, fuzzy
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "NOTO: mankas implicita opcio-dosiero '%s'\n"
-
-#, fuzzy
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -11091,10 +11108,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "sorry, can't do this in batch mode\n"
 #~ msgstr "ne povas fari tion en neinteraga reĝimo\n"
-
-#, fuzzy
-#~ msgid "can't open file `%s': %s\n"
-#~ msgstr "ne povas malfermi %s: %s\n"
 
 #~ msgid "key %08lX: key has been revoked!\n"
 #~ msgstr "ŝlosilo %08lX: ŝlosilo estas revokita!\n"

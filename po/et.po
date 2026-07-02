@@ -3153,6 +3153,14 @@ msgid "reason for revocation: "
 msgstr "tühistamise põhjus: "
 
 #, fuzzy, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "võti %08lX: ei leia algset võtmeblokki: %s\n"
+
+#, fuzzy, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "võti %08lX: ei õnnestu lugeda algset võtmeblokki: %s\n"
+
+#, fuzzy, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
 "võti %08lX: avalik võti puudub - tühistamise sertifikaati ei saa rakendada\n"
@@ -5328,6 +5336,11 @@ msgid "unknown weak digest '%s'\n"
 msgstr "tundmatu allkirja klass"
 
 #, fuzzy, c-format
+#| msgid "NOTE: old default options file `%s' ignored\n"
+msgid "Note: partial file '%s' removed\n"
+msgstr "MÄRKUS: ignoreerin vana vaikimisi võtmete faili `%s'\n"
+
+#, fuzzy, c-format
 #| msgid "File `%s' exists. "
 msgid "File '%s' exists. "
 msgstr "Fail `%s' on olemas. "
@@ -6066,6 +6079,11 @@ msgstr "eraldiseisev allkiri klassiga 0x%02x\n"
 #, fuzzy, c-format
 msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr "eeldan tundmatu kriitilise biti tõttu võtmel %08lX vigast allkirja\n"
+
+#, fuzzy, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"võti %08lX: avalik võti puudub - tühistamise sertifikaati ei saa rakendada\n"
 
 #, fuzzy, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7803,6 +7821,10 @@ msgstr "kirjutan faili `%s'\n"
 #, fuzzy, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "`%s' ei õnnestu sulgeda: %s\n"
+
+#, fuzzy, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "faili ei õnnestu avada: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9619,11 +9641,6 @@ msgstr ""
 #~ msgstr "Väljun salvestamata? "
 
 #, fuzzy
-#~| msgid "NOTE: old default options file `%s' ignored\n"
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "MÄRKUS: ignoreerin vana vaikimisi võtmete faili `%s'\n"
-
-#, fuzzy
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -11191,10 +11208,6 @@ msgstr ""
 
 #~ msgid "sorry, can't do this in batch mode\n"
 #~ msgstr "vabandust, seda ei saa pakettmoodis teha\n"
-
-#, fuzzy
-#~ msgid "can't open file `%s': %s\n"
-#~ msgstr "faili ei õnnestu avada: %s\n"
 
 #~ msgid "key %08lX: key has been revoked!\n"
 #~ msgstr "võti %08lX: võti on tühistatud!\n"
