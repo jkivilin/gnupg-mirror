@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnupg-2.5.15\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2026-06-09 14:17+0200\n"
+"PO-Revision-Date: 2026-07-02 14:42+0200\n"
 "Last-Translator: Werner Koch <wk@gnupg.org>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -3035,6 +3035,14 @@ msgid "reason for revocation: "
 msgstr "Grund für Widerruf: "
 
 #, c-format
+msgid "key %s: can't locate keyblock: %s\n"
+msgstr "Schlüssel %s: derSchlüsselblock wurde nicht gefunden: %s\n"
+
+#, c-format
+msgid "key %s: can't read keyblock: %s\n"
+msgstr "Schlüssel %s: Lesefehler im Schlüsselblock: %s\n"
+
+#, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
 msgstr ""
 "Schlüssel %s: Kein öffentlicher Schlüssel - der Schlüsselwiderruf kann nicht "
@@ -5145,6 +5153,10 @@ msgid "unknown weak digest '%s'\n"
 msgstr "Unbekanntes schwache Hashverfahren '%s'\n"
 
 #, c-format
+msgid "Note: partial file '%s' removed\n"
+msgstr "Hinweis: Die unvollständig erzeugte Datei '%s' wurde entfernt\n"
+
+#, c-format
 msgid "File '%s' exists. "
 msgstr "Datei '%s' existiert bereits. "
 
@@ -5905,6 +5917,12 @@ msgid "assuming bad signature from key %s due to an unknown critical bit\n"
 msgstr ""
 "Vermutlich eine FALSCHE Signatur von Schlüssel %s, wegen unbekanntem "
 "\"critical bit\"\n"
+
+#, c-format
+msgid "key %s: no public key - can't check revocation signature.\n"
+msgstr ""
+"Schlüssel %s: Kein öffentlicher Schlüssel - der Schlüsselwiderruf kann\n"
+"nicht geprüft werden\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7654,6 +7672,10 @@ msgstr "Importiere allgemeine Zertifikate: %s\n"
 #, c-format
 msgid "can't sign using '%s': %s\n"
 msgstr "Signieren mit `%s' nicht möglich: %s\n"
+
+#, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "Die Ausgabedatei kann nicht geöffnet werden: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
@@ -9559,9 +9581,6 @@ msgstr "Verwaltung der Kommandohistorie"
 #~ msgid "run without asking a user"
 #~ msgstr "Ausführung ohne Benutzernachfrage"
 
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr "Hinweis: Alte voreingestellte Optionendatei '%s' wurde ignoriert\n"
-
 #~ msgid ""
 #~ "@\n"
 #~ "Commands:\n"
@@ -9685,10 +9704,8 @@ msgstr "Verwaltung der Kommandohistorie"
 #~ msgid "Sex ((M)ale, (F)emale or space): "
 #~ msgstr "Geschlecht: (Männlich (M), Weiblich (F) oder Leerzeichen): "
 
-#, fuzzy
 #~ msgid "error setting policy for key %s, user id \"%s\": %s"
-#~ msgstr ""
-#~ "Fehler beim Setzen der Policy des öff. Schlüssels '%s', UID '%s': %s\n"
+#~ msgstr "Fehler beim Setzen der Policy des öff. Schlüssels '%s', UID '%s': %s\n"
 
 #~ msgid "only SHA-1 is supported for OCSP responses\n"
 #~ msgstr "Lediglich SHA-1 wird bei OCSP Antworten unterstützt\n"
