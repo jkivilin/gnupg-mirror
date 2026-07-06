@@ -2836,6 +2836,31 @@ cmd_keytocard (assuan_context_t ctx, char *line)
 }
 
 
+static const char hlp_remove_key_file[] =
+  "REMOVE_KEY_FILE <hexgrip>\n"
+  "Remove a secret keyfile after restoring a backup to card.\n"
+  "WARNING: This is a GnuPG 2.2-only function.\n"
+  "For later versions we use agent_set_ephemeral_mode.\n";
+static gpg_error_t
+cmd_remove_key_file (assuan_context_t ctx, char *line)
+{
+  ctrl_t ctrl = assuan_get_pointer (ctx);
+  gpg_error_t err;
+  unsigned char grip[20];
+
+  if (ctrl->restricted)
+    return leave_cmd (ctx, gpg_error (GPG_ERR_FORBIDDEN));
+
+  line = skip_options (line);
+  err = parse_keygrip (ctx, line, grip);
+
+  if (!err)
+    err = agent_do_remove_key_file (grip);
+
+  return leave_cmd (ctx, err);
+}
+
+
 
 static const char hlp_getval[] =
   "GETVAL <key>\n"
@@ -3533,6 +3558,7 @@ register_commands (assuan_context_t ctx)
     { "RELOADAGENT",    cmd_reloadagent,hlp_reloadagent },
     { "GETINFO",        cmd_getinfo,   hlp_getinfo },
     { "KEYTOCARD",      cmd_keytocard, hlp_keytocard },
+    { "REMOVE_KEY_FILE",cmd_remove_key_file, hlp_remove_key_file },
     { NULL }
   };
   int i, rc;

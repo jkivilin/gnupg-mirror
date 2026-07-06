@@ -920,6 +920,11 @@ remove_key_file (const unsigned char *grip)
   return err;
 }
 
+gpg_error_t
+agent_do_remove_key_file (const unsigned char *grip)
+{
+  return remove_key_file (grip);
+}
 
 /* Return the secret key as an S-Exp in RESULT after locating it using
    the GRIP.  If the operation shall be diverted to a token, an

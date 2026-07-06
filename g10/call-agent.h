@@ -107,6 +107,9 @@ int agent_keytocard (const char *hexgrip, int keyno, int force,
                      const char *serialno, const char *timestamp,
                      const char *ecdh_param_str);
 
+/* Remove secret key file for the key with HEXGRIP. */
+gpg_error_t agent_remove_key_file (const char *hexgrip);
+
 /* Send a SETATTR command to the SCdaemon. */
 gpg_error_t agent_scd_setattr (const char *name,
                                const void *value, size_t valuelen);

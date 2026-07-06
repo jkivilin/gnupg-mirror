@@ -988,6 +988,27 @@ agent_keytocard (const char *hexgrip, int keyno, int force,
   status_sc_op_failure (rc);
   return rc;
 }
+
+
+gpg_error_t
+agent_remove_key_file (const char *hexgrip)
+{
+  gpg_error_t err;
+  char line[ASSUAN_LINELENGTH];
+
+  snprintf (line, DIM (line), "REMOVE_KEY_FILE %s",
+            hexgrip);
+
+  err = start_agent (NULL, 0);
+  if (err)
+    return err;
+
+  err = assuan_transact (agent_ctx, line, NULL, NULL,
+                         NULL, NULL, NULL, NULL);
+  return err;
+}
+
+
 
 /* Object used with the agent_scd_getattr_one.  */
 struct getattr_one_parm_s {

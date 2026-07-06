@@ -426,6 +426,7 @@ int agent_write_private_key (const unsigned char *grip,
                              int force, int reallyforce,
                              const char *serialno, const char *keyref,
                              const char *dispserialno, time_t timestamp);
+gpg_error_t agent_do_remove_key_file (const unsigned char *grip);
 gpg_error_t agent_key_from_file (ctrl_t ctrl,
                                  const char *cache_nonce,
                                  const char *desc_text,

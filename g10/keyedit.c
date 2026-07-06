@@ -1936,6 +1936,17 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
                 redisplay = 1;
                 sec_shadowing = 1;
               }
+
+            {
+              /* Remove the local secret key file after moving the backup to card. */
+              char *hexgrip;
+              PKT_public_key *pk_tmp;
+
+              pk_tmp = node->pkt->pkt.public_key;
+              err = hexkeygrip_from_pk (pk_tmp, &hexgrip);
+              if (!err)
+                err = agent_remove_key_file (hexgrip);
+            }
             release_kbnode (node);
           }
           break;
