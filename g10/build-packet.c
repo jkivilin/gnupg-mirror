@@ -1509,8 +1509,10 @@ build_sig_subpkt_from_sig (PKT_signature *sig, PKT_public_key *pksk,
         buf[0] = sig->rev_subject_info->fprlen == 20? 4:
           sig->rev_subject_info->fprlen == 32? 5 : 0;
 
-        memcpy(buf+1, sig->rev_subject_info->fpr, sig->rev_subject_info->fprlen);
-        build_sig_subpkt (sig, SIGSUBPKT_INT_RCP_FPR, buf, fprlen + 1);
+        memcpy (buf+1, sig->rev_subject_info->fpr,
+                sig->rev_subject_info->fprlen);
+        build_sig_subpkt (sig, SIGSUBPKT_INT_RCP_FPR,
+                          buf, sig->rev_subject_info->fprlen + 1);
       }
 }
 
