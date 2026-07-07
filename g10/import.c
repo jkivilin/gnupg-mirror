@@ -3673,15 +3673,12 @@ import_revoke_cert (ctrl_t ctrl, kbnode_t node, unsigned int options,
       if (!hd)
         {
           rc = gpg_error_from_syserror ();
-          return rc;
+          goto leave;
         }
 
       rc = keydb_lock (hd);
       if (rc)
-        {
-          keydb_release (hd);
-          return rc;
-        }
+        goto leave;
 
       rc = keydb_search_fpr (hd,
                              sig->rev_subject_info->fpr,
@@ -3749,10 +3746,7 @@ import_revoke_cert (ctrl_t ctrl, kbnode_t node, unsigned int options,
 
       rc = keydb_lock (hd);
       if (rc)
-        {
-          keydb_release (hd);
-          goto leave;
-        }
+        goto leave;
 
       {
         byte afp[MAX_FINGERPRINT_LEN];
