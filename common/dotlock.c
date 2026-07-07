@@ -1312,8 +1312,6 @@ dotlock_take_unix (dotlock_t h, long timeout)
           my_set_errno (saveerrno);
           return -1;
         }
-      h->msg_cb (h, h->msg_cb_arg, DOTLOCK_FILE_ERROR,
-                 "lockfile disappeared\n");
       goto again;
     }
   else if ( (pid == dotlock_get_process_id (h) && same_node && !h->by_parent)
