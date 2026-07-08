@@ -2251,6 +2251,7 @@ validate_keys (ctrl_t ctrl, int interactive)
           if (!opt.quiet)
             log_info (_("Note: ultimately trusted key %s expired\n"),
                       keystr(k->kid));
+          release_kbnode (keyblock);
           continue;
         }
 
