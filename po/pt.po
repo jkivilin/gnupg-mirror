@@ -77,9 +77,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg 2.5.17\n"
+"Project-Id-Version: gnupg 2.5.21\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2026-02-16 22:43+0000\n"
+"PO-Revision-Date: 2026-07-09 12:31+0100\n"
 "Last-Translator: Daniel Cerqueira <dan.git@brilhante.top>\n"
 "Language-Team: pt <dan.git@brilhante.top>\n"
 "Language: pt\n"
@@ -3054,15 +3054,13 @@ msgstr "A ID de utilizador já não é válida"
 msgid "reason for revocation: "
 msgstr "motivo da revogação: "
 
-#, fuzzy, c-format
-#| msgid "key %s: can't locate original keyblock: %s\n"
+#, c-format
 msgid "key %s: can't locate keyblock: %s\n"
-msgstr "chave %s: não é possível localizar o keyblock original: %s\n"
+msgstr "chave %s: não é possível localizar o keyblock: %s\n"
 
-#, fuzzy, c-format
-#| msgid "key %s: can't read original keyblock: %s\n"
+#, c-format
 msgid "key %s: can't read keyblock: %s\n"
-msgstr "chave %s: não é possível ler o keyblock original: %s\n"
+msgstr "chave %s: não é possível ler o keyblock: %s\n"
 
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
@@ -5155,10 +5153,9 @@ msgstr ""
 msgid "unknown weak digest '%s'\n"
 msgstr "digest '%s' fraco e desconhecido\n"
 
-#, fuzzy, c-format
-#| msgid "new cache dir file '%s' created\n"
+#, c-format
 msgid "Note: partial file '%s' removed\n"
-msgstr "novo ficheiro '%s' da pasta de cache criado\n"
+msgstr "Nota: ficheiro parcial '%s' removido\n"
 
 #, c-format
 msgid "File '%s' exists. "
@@ -5890,12 +5887,11 @@ msgstr ""
 "assumindo assinatura inválida da chave %s devido a um bit crítico "
 "desconhecido\n"
 
-#, fuzzy, c-format
-#| msgid "key %s: no public key - can't apply revocation certificate\n"
+#, c-format
 msgid "key %s: no public key - can't check revocation signature.\n"
 msgstr ""
-"chave %s: nenhuma chave pública - não é possível aplicar certificado de "
-"revogação\n"
+"chave %s: nenhuma chave pública - não é possível verificar assinatura de "
+"revogação.\n"
 
 #, c-format
 msgid "key %s: no subkey for subkey revocation signature\n"
@@ -7587,10 +7583,9 @@ msgstr "Nota: não será possível cifrar para '%s': %s\n"
 msgid "unknown validation model '%s'\n"
 msgstr "modelo de validação '%s' desconhecido\n"
 
-#, fuzzy, c-format
-#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+#, c-format
 msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
-msgstr "o algoritmo de cifra %d%s é desconhecido ou foi desabilitado\n"
+msgstr "o algoritmo de cifra '%s' é desconhecido - usando '%s'\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"
@@ -7600,10 +7595,9 @@ msgstr "importando certificados comuns '%s'\n"
 msgid "can't sign using '%s': %s\n"
 msgstr "não é possível assinar usando '%s': %s\n"
 
-#, fuzzy, c-format
-#| msgid "can't open fd %d: %s\n"
+#, c-format
 msgid "can't open outputfile: %s\n"
-msgstr "não é possível abrir fd %d: %s\n"
+msgstr "não é possível abrir ficheiro de saída: %s\n"
 
 #, c-format
 msgid "invalid command (there is no implicit command)\n"
