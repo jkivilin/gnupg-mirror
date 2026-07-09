@@ -59,6 +59,10 @@
 #include <sys/stat.h> /* for stat() */
 #endif
 
+#ifdef __APPLE__
+#include <libproc.h>
+#endif /*__APPLE__*/
+
 #include "util.h"
 #include "sysutils.h"
 #include "i18n.h"
@@ -910,6 +914,45 @@ unix_myproc_self (int with_fallback)
   return buffer;
 }
 
+#ifdef __APPLE__
+/* macOS has no /proc file system but an undocumented system call but
+ * with availabale source code.  */
+static char *
+macos_myproc_self (int with_fallback)
+{
+  char *buffer;
+  size_t bufsize = PROC_PIDPATHINFO_SIZE;
+  int nread;
+  gpg_error_t err;
+  const char *name;
+
+  for (;;)
+    {
+      buffer = xmalloc (bufsize+1);
+      nread = proc_pidpath (getpid (), buffer, bufsize);
+      if (nread > 0)
+        break;  /* success */
+      err = gpg_error_from_syserror ();
+      buffer[0] = 0;  /* An empty return string indicates an error.  */
+      if (errno == EOVERFLOW || bufsize >= 4095)
+        {
+          if (with_fallback
+              && (name = getenv ("GNUPG_BUILD_ROOT")) && *name == '/')
+            {
+              log_info ("error from proc_pidpath: %s"
+                        " - trying Unix method\n", gpg_strerror (err));
+              xfree  (buffer);
+              return unix_myproc_self (with_fallback);
+            }
+          break;
+        }
+      xfree (buffer);
+      bufsize += 256;
+    }
+  return buffer;
+}
+#endif /*__APPLE__*/
+
 
 /* Determine the root directory of the gnupg installation on Unix.
  * The standard case is that this function returns NULL so that the
@@ -931,7 +974,11 @@ unix_rootdir (enum wantdir_values wantdir)
       char *p;
       char *buffer;
 
+#ifdef __APPLE__
+      buffer = macos_myproc_self (1/* with_fallback */);
+#else
       buffer = unix_myproc_self (1/* with_fallback */);
+#endif
       if (!*buffer)
         {
           xfree (buffer);
@@ -1117,6 +1164,8 @@ gnupg_myproc_self (void)
   char *result;
 #ifdef HAVE_W32_SYSTEM
   result = w32_myproc_self ();
+#elif defined(__APPLE__)
+  result = macos_myproc_self (0);
 #else
   result = unix_myproc_self (0);
 #endif
