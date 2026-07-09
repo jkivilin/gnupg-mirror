@@ -1293,21 +1293,27 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
                          &dfparm);
 
                       /* Check the cert chain for CO_DE_VS compliance. */
-                      if (cert)
+                      if (cert && opt.compliance == CO_DE_VS)
                         {
                           ksba_isotime_t sigtime, keyexptime;
                           unsigned int verifyflags;
                           size_t buflen;
                           char buf[1];
 
+                          dfparm.is_de_vs =
+                            (dfparm.is_de_vs &&
+                             gnupg_gcrypt_is_compliant (CO_DE_VS));
+
                           rc = gpgsm_validate_chain (ctrl, cert,
                                                      *sigtime? sigtime :
-                                                   "19700101T000000",
+                                                     "19700101T000000",
                                                      keyexptime, 0,
                                                      NULL, 0, &verifyflags);
                           audit_log_ok (ctrl->audit, AUDIT_CHAIN_STATUS, rc);
                           if (rc)
                             {
+                              dfparm.is_de_vs = 0;
+
                               log_error ("invalid certification chain: %s\n",
                                          gpg_strerror (rc));
                               if (gpg_err_code (rc) == GPG_ERR_BAD_CERT_CHAIN
@@ -1327,29 +1333,31 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
                                                              &buf, sizeof (buf),
                                                              &buflen) && buflen)
                             {
+                              /* Last condition for de-vs compliance is met
+                               * (cert has de-vs flag). So we can print the
+                               * status line for de-vs compliance.*/
                               if (buf[0])
-                                ;
+                                gpgsm_status (ctrl, STATUS_DECRYPTION_COMPLIANCE_MODE,
+                                              gnupg_status_compliance_flag (CO_DE_VS));
                               else
                                 dfparm.is_de_vs = 0;
                             }
-                          else if (opt.require_compliance
-                                   && opt.compliance == CO_DE_VS)
+                          else
                             {
-                              log_error ("get_user_data(is_de_vs) failed.\n");
+                              dfparm.is_de_vs = 0;
+                              if (opt.require_compliance)
+                                {
+                                  log_error ("get_user_data(is_de_vs) failed.\n");
+                                  gpgsm_errors_seen = 1;
+                                }
+                            }
+
+                          if (!dfparm.is_de_vs && opt.require_compliance)
+                            {
+                              log_error (_("operation forced to fail due to"
+                                           " unfulfilled compliance rules\n"));
                               gpgsm_errors_seen = 1;
                             }
-                        }
-
-                      if (dfparm.is_de_vs
-                          && gnupg_gcrypt_is_compliant (CO_DE_VS))
-                        gpgsm_status (ctrl, STATUS_DECRYPTION_COMPLIANCE_MODE,
-                                      gnupg_status_compliance_flag (CO_DE_VS));
-                      else if (opt.require_compliance
-                               && opt.compliance == CO_DE_VS)
-                        {
-                          log_error (_("operation forced to fail due to"
-                                       " unfulfilled compliance rules\n"));
-                          gpgsm_errors_seen = 1;
                         }
                     }
                   audit_log_ok (ctrl->audit, AUDIT_RECP_RESULT, rc);
