@@ -1419,12 +1419,15 @@ write_selfsigs (ctrl_t ctrl, kbnode_t root, PKT_public_key *psk,
 }
 
 
-/* Write the key binding signature.  If TIMESTAMP is not NULL use the
-   signature creation time.  PRI_PSK is the key use for signing.
-   SUB_PSK is a key used to create a back-signature; that one is only
-   used if USE has the PUBKEY_USAGE_SIG capability.  */
+/* Append a key binding signature to the last subkey in KEYBLOCK.
+ * PRI_PSK is the key used to create (sign) the key binding signature
+ * this is usuallay the primary key.  SUB_PSK is a key used to create
+ * a back-signature; this is required if the PUBKEY_USAGE_SIG
+ * capability is passed in USE (which gives the key usage).  TIMESTAMP
+ * is the signature creation time with 0 meaning "now".  CACHE_NONCE
+ * is passed to the agent to indentify the passphrase cache slot.  */
 static int
-write_keybinding (ctrl_t ctrl, kbnode_t root,
+write_keybinding (ctrl_t ctrl, kbnode_t keyblock,
                   PKT_public_key *pri_psk, PKT_public_key *sub_psk,
                   unsigned int use, u32 timestamp, const char *cache_nonce)
 {
@@ -1439,7 +1442,7 @@ write_keybinding (ctrl_t ctrl, kbnode_t root,
     log_info(_("writing key binding signature\n"));
 
   /* Get the primary pk packet from the tree.  */
-  node = find_kbnode (root, PKT_PUBLIC_KEY);
+  node = find_kbnode (keyblock, PKT_PUBLIC_KEY);
   if (!node)
     BUG();
   pri_pk = node->pkt->pkt.public_key;
@@ -1450,7 +1453,7 @@ write_keybinding (ctrl_t ctrl, kbnode_t root,
 
   /* Find the last subkey. */
   sub_pk = NULL;
-  for (node = root; node; node = node->next )
+  for (node = keyblock; node; node = node->next )
     {
       if (node->pkt->pkttype == PKT_PUBLIC_SUBKEY)
         sub_pk = node->pkt->pkt.public_key;
@@ -1490,7 +1493,7 @@ write_keybinding (ctrl_t ctrl, kbnode_t root,
   pkt = xmalloc_clear ( sizeof *pkt );
   pkt->pkttype = PKT_SIGNATURE;
   pkt->pkt.signature = sig;
-  add_kbnode (root, new_kbnode (pkt) );
+  add_kbnode (keyblock, new_kbnode (pkt) );
   return err;
 }
 
