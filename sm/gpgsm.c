@@ -2132,6 +2132,7 @@ main ( int argc, char **argv)
       {
         char *output_filename = NULL;
         estream_t fp = NULL;
+        int errcount = log_get_errorcount (0);
 
         if (!(opt.compat_flags & COMPAT_NO_PARTIALFILEGUARD)
             && opt.outfile && strcmp (opt.outfile, "-") != 0)
@@ -2178,6 +2179,14 @@ main ( int argc, char **argv)
             es_fclose (fp);
             if (output_filename)
               gnupg_rename_file (output_filename, opt.outfile, NULL);
+
+            /* We successfully decrypted but gpgsm could still fail, i.e.
+             * when decrypting a file with multiple recipients and
+             * the pin entry is cancelled for one key but gpsm successfully
+             * decrypts for another key.
+             * In this case we should reset the error count. */
+            if (!errcount)
+              log_get_errorcount (1); /* clear counter */
           }
         xfree (output_filename);
       }
