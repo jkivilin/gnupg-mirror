@@ -1675,16 +1675,28 @@ key_attr (void)
 
 
 static void
-generate_card_keys (ctrl_t ctrl)
+generate_card_keys (ctrl_t ctrl, const char *argstring)
 {
   struct agent_card_info_s info;
   int forced_chv1;
-  int want_backup;
+  unsigned int genflags = GENERATE_KEYPAIR_FULL;
+
+  if (argstring && *argstring)
+    {
+      if (!strcmp (argstring, "primary")
+          || !strcmp (argstring, "--primary"))
+        genflags |= GENERATE_KEYPAIR_CARDPRIMARY;
+      else
+        {
+          tty_printf("usage: generate [primary]\n");
+          return;
+        }
+    }
 
   if (get_info_for_key_operation (&info))
     return;
 
-  if (info.extcap.ki)
+  if (info.extcap.ki && !(genflags & GENERATE_KEYPAIR_CARDPRIMARY))
     {
       char *answer;
 
@@ -1693,12 +1705,11 @@ generate_card_keys (ctrl_t ctrl)
       answer = cpr_get ("cardedit.genkeys.backup_enc",
                         _("Make off-card backup of encryption key? (Y/n) "));
 
-      want_backup = answer_is_yes_no_default (answer, 1/*(default to Yes)*/);
+      if (answer_is_yes_no_default (answer, 1/*(default to Yes)*/))
+        genflags |= GENERATE_KEYPAIR_CARDBACKUP;
       cpr_kill_prompt ();
       xfree (answer);
     }
-  else
-    want_backup = 0;
 
   if ( (info.fpr1len && !fpr_is_zero (info.fpr1, info.fpr1len))
        || (info.fpr2len && !fpr_is_zero (info.fpr2, info.fpr2len))
@@ -1723,7 +1734,7 @@ generate_card_keys (ctrl_t ctrl)
   if (check_pin_for_key_operation (&info, &forced_chv1))
     goto leave;
 
-  generate_keypair (ctrl, 1, NULL, info.serialno, want_backup);
+  generate_keypair (ctrl, NULL, info.serialno, genflags);
 
  leave:
   agent_release_card_info (&info);
@@ -2582,7 +2593,7 @@ card_edit (ctrl_t ctrl, strlist_t commands)
           break;
 
         case cmdGENERATE:
-          generate_card_keys (ctrl);
+          generate_card_keys (ctrl, arg_string);
           break;
 
         case cmdPASSWD:

@@ -1023,11 +1023,15 @@ signing.
   @opindex keyedit:bkuptocard
   Restore the given @var{file} to a card. This command may be used to restore a
   backup key (as generated during card initialization) to a new card. In
-  almost all cases this will be the encryption key. You should use this
+  almost all cases this will be the encryption key.  You should use this
   command only with the corresponding public key and make sure that the
-  file given as argument is indeed the backup to restore. You should then
-  select 2 to restore as encryption key.  You will first be asked to enter
-  the passphrase of the backup key and then for the Admin PIN of the card.
+  file given as argument is indeed the backup to restore.
+
+  To restore a backup first initialize a new card but use ``generate
+  primary`` instead of a plain ``generate''.  Then use this command
+  and select 2 to restore as encryption key.  You will be be asked to
+  enter the passphrase of the backup key and then for the Admin and
+  standard PINs of the card.
 
   @item keytotpm
   @opindex keyedit:keytotpm

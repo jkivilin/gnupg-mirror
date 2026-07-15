@@ -4940,7 +4940,7 @@ main (int argc, char **argv)
           {
 	    if( argc > 1 )
 		wrong_args("--generate-key [parameterfile]");
-	    generate_keypair (ctrl, 0, argc? *argv : NULL, NULL, 0);
+	    generate_keypair (ctrl, argc? *argv : NULL, NULL, 0);
           }
 	else
           {
@@ -4950,12 +4950,12 @@ main (int argc, char **argv)
                   wrong_args("--generate-key [parameterfile]");
 
                 opt.batch = 1;
-                generate_keypair (ctrl, 0, argc? *argv : NULL, NULL, 0);
+                generate_keypair (ctrl, argc? *argv : NULL, NULL, 0);
               }
             else if (argc)
               wrong_args ("--generate-key");
             else
-              generate_keypair (ctrl, 0, NULL, NULL, 0);
+              generate_keypair (ctrl, NULL, NULL, 0);
           }
 	break;
 
@@ -4966,13 +4966,14 @@ main (int argc, char **argv)
           {
 	    if (argc > 1)
               wrong_args ("--full-generate-key [parameterfile]");
-	    generate_keypair (ctrl, 1, argc? *argv : NULL, NULL, 0);
+	    generate_keypair (ctrl, argc? *argv : NULL, NULL,
+                              GENERATE_KEYPAIR_FULL);
           }
 	else
           {
 	    if (argc)
               wrong_args("--full-generate-key");
-	    generate_keypair (ctrl, 1, NULL, NULL, 0);
+	    generate_keypair (ctrl, NULL, NULL, GENERATE_KEYPAIR_FULL);
 	}
 	break;
 

@@ -321,8 +321,13 @@ unsigned int ask_key_flags (int algo, int subkey, unsigned int current);
 const char *ask_curve (int *algo, int *subkey_algo, const char *current);
 void quick_generate_keypair (ctrl_t ctrl, const char *uid, const char *algostr,
                              const char *usagestr, const char *expirestr);
-void generate_keypair (ctrl_t ctrl, int full, const char *fname,
-                       const char *card_serialno, int card_backup_key);
+
+#define GENERATE_KEYPAIR_FULL        1  /* Full key generation dialog.  */
+#define GENERATE_KEYPAIR_CARDBACKUP  2  /* Create card key with backup. */
+#define GENERATE_KEYPAIR_CARDPRIMARY 4  /* Only the primary card key.   */
+void generate_keypair (ctrl_t ctrl, const char *fname,
+                       const char *card_serialno, unsigned int genflags);
+
 int keygen_set_std_prefs (const char *string,int personal);
 PKT_user_id *keygen_get_std_prefs (void);
 int keygen_add_key_expire( PKT_signature *sig, void *opaque );

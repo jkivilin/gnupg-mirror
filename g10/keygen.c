@@ -5715,15 +5715,16 @@ quick_generate_keypair (ctrl_t ctrl, const char *uid, const char *algostr,
 /*
  * Generate a keypair (fname is only used in batch mode) If
  * CARD_SERIALNO is not NULL the function will create the keys on an
- * OpenPGP Card.  If CARD_BACKUP_KEY has been set and CARD_SERIALNO is
- * NOT NULL, the encryption key for the card is generated on the host,
- * imported to the card and a backup file created by gpg-agent.  If
- * FULL is not set only the basic prompts are used (except for batch
+ * OpenPGP Card.  If GENFLAGS has the GENERATE_KEYPAIR_CARDBACKUP bit
+ * set and CARD_SERIALNO is NOT NULL, the encryption key for the card
+ * is generated on the host, imported to the card and a backup file
+ * created by gpg-agent.  If GENFLAGS has the GENERATE_KEYPAIR_FULL
+ * bit cleared only the basic prompts are used (except for batch
  * mode).
  */
 void
-generate_keypair (ctrl_t ctrl, int full, const char *fname,
-                  const char *card_serialno, int card_backup_key)
+generate_keypair (ctrl_t ctrl, const char *fname,
+                  const char *card_serialno, unsigned int genflags)
 {
   gpg_error_t err;
   unsigned int nbits;
@@ -5735,10 +5736,6 @@ generate_keypair (ctrl_t ctrl, int full, const char *fname,
   struct para_data_s *para = NULL;
   struct para_data_s *r;
   struct output_control_s outctrl;
-
-#ifndef ENABLE_CARD_SUPPORT
-  (void)card_backup_key;
-#endif
 
   memset( &outctrl, 0, sizeof( outctrl ) );
 
@@ -5788,53 +5785,57 @@ generate_keypair (ctrl_t ctrl, int full, const char *fname,
       r->next = para;
       para = r;
 
-      r = xcalloc (1, sizeof *r + 20 );
-      r->key = pSUBKEYTYPE;
-      sprintf( r->u.value, "%d", info.key_attr[1].algo );
-      r->next = para;
-      para = r;
-      r = xcalloc (1, sizeof *r + 20 );
-      r->key = pSUBKEYUSAGE;
-      strcpy (r->u.value, "encrypt");
-      r->next = para;
-      para = r;
-      if (info.key_attr[1].algo == PUBKEY_ALGO_RSA)
+      if (!(genflags & GENERATE_KEYPAIR_CARDPRIMARY))
         {
           r = xcalloc (1, sizeof *r + 20 );
-          r->key = pSUBKEYLENGTH;
-          sprintf( r->u.value, "%u", info.key_attr[1].nbits);
+          r->key = pSUBKEYTYPE;
+          sprintf( r->u.value, "%d", info.key_attr[1].algo );
           r->next = para;
           para = r;
-        }
-      else if (info.key_attr[1].algo == PUBKEY_ALGO_ECDSA
-               || info.key_attr[1].algo == PUBKEY_ALGO_EDDSA
-               || info.key_attr[1].algo == PUBKEY_ALGO_ECDH)
-        {
-          r = xcalloc (1, sizeof *r + strlen (info.key_attr[1].curve));
-          r->key = pSUBKEYCURVE;
-          strcpy (r->u.value, info.key_attr[1].curve);
+          r = xcalloc (1, sizeof *r + 20 );
+          r->key = pSUBKEYUSAGE;
+          strcpy (r->u.value, "encrypt");
           r->next = para;
           para = r;
-        }
+          if (info.key_attr[1].algo == PUBKEY_ALGO_RSA)
+            {
+              r = xcalloc (1, sizeof *r + 20 );
+              r->key = pSUBKEYLENGTH;
+              sprintf( r->u.value, "%u", info.key_attr[1].nbits);
+              r->next = para;
+              para = r;
+            }
+          else if (info.key_attr[1].algo == PUBKEY_ALGO_ECDSA
+                   || info.key_attr[1].algo == PUBKEY_ALGO_EDDSA
+                   || info.key_attr[1].algo == PUBKEY_ALGO_ECDH)
+            {
+              r = xcalloc (1, sizeof *r + strlen (info.key_attr[1].curve));
+              r->key = pSUBKEYCURVE;
+              strcpy (r->u.value, info.key_attr[1].curve);
+              r->next = para;
+              para = r;
+            }
 
-      r = xcalloc (1, sizeof *r + 20 );
-      r->key = pAUTHKEYTYPE;
-      sprintf( r->u.value, "%d", info.key_attr[2].algo );
-      r->next = para;
-      para = r;
-
-      if (card_backup_key)
-        {
-          r = xcalloc (1, sizeof *r + 1);
-          r->key = pCARDBACKUPKEY;
-          strcpy (r->u.value, "1");
+          r = xcalloc (1, sizeof *r + 20 );
+          r->key = pAUTHKEYTYPE;
+          sprintf( r->u.value, "%d", info.key_attr[2].algo );
           r->next = para;
           para = r;
+
+          if ((genflags & GENERATE_KEYPAIR_CARDBACKUP))
+            {
+              r = xcalloc (1, sizeof *r + 1);
+              r->key = pCARDBACKUPKEY;
+              strcpy (r->u.value, "1");
+              r->next = para;
+              para = r;
+            }
         }
 #endif /*ENABLE_CARD_SUPPORT*/
     }
-  else if (full)  /* Full featured key generation.  */
+  else if ((genflags & GENERATE_KEYPAIR_FULL))
     {
+      /* This is the full featured key generation.  */
       int subkey_algo;
       char *key_from_hexgrip = NULL;
       int cardkey;
@@ -6151,7 +6152,7 @@ generate_keypair (ctrl_t ctrl, int full, const char *fname,
     }
 
 
-  expire = full? ask_expire_interval (0, NULL)
+  expire = (genflags & GENERATE_KEYPAIR_FULL)? ask_expire_interval (0, NULL)
                : parse_expire_string (default_expiration_interval);
   r = xcalloc (1, sizeof *r + 20);
   r->key = pKEYEXPIRE;
@@ -6164,7 +6165,7 @@ generate_keypair (ctrl_t ctrl, int full, const char *fname,
   r->next = para;
   para = r;
 
-  uid = ask_user_id (0, full, NULL);
+  uid = ask_user_id (0, !!(genflags & GENERATE_KEYPAIR_FULL), NULL);
   if (!uid)
     {
       log_error(_("Key generation canceled.\n"));
