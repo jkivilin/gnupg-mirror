@@ -343,6 +343,8 @@ gpg_error_t generate_subkeypair (ctrl_t ctrl, kbnode_t keyblock,
                                  const char *algostr,
                                  const char *usagestr,
                                  const char *expirestr);
+gpg_error_t append_subkey_to_keyblock (ctrl_t ctrl, kbnode_t keyblock,
+                                       PKT_public_key *sub_pk, int use);
 #ifdef ENABLE_CARD_SUPPORT
 gpg_error_t generate_card_subkeypair (ctrl_t ctrl, kbnode_t pub_keyblock,
                                       int keyno, const char *serialno);
@@ -540,7 +542,8 @@ void change_pin (int no, int allow_admin);
 void card_status (ctrl_t ctrl, estream_t fp, const char *serialno);
 void card_edit (ctrl_t ctrl, strlist_t commands);
 gpg_error_t  card_generate_subkey (ctrl_t ctrl, kbnode_t pub_keyblock);
-int  card_store_subkey (KBNODE node, int use, strlist_t *processed_keys);
+int  card_store_subkey (kbnode_t node, int use, strlist_t *processed_keys,
+                        int *r_selected_use);
 #endif
 
 /*-- migrate.c --*/

@@ -1794,9 +1794,13 @@ card_generate_subkey (ctrl_t ctrl, kbnode_t pub_keyblock)
    the serialno stuff instead of the actual secret key parameters.
    USE is the usage for that key; 0 means any usage.  If
    PROCESSED_KEYS is not NULL it is a pointer to an strlist which will
-   be filled with the keygrips of successfully stored keys.  */
+   be filled with the keygrips of successfully stored keys.  The
+   function returns true if the key was successfully stored to the
+   card.  If R_SELECTED_USE is not NULL the select use for the key is
+   stored there.  */
 int
-card_store_subkey (KBNODE node, int use, strlist_t *processed_keys)
+card_store_subkey (kbnode_t node, int use, strlist_t *processed_keys,
+                   int *r_selected_use)
 {
   struct agent_card_info_s info;
   int okay = 0;
@@ -1812,6 +1816,9 @@ card_store_subkey (KBNODE node, int use, strlist_t *processed_keys)
 
   log_assert (node->pkt->pkttype == PKT_PUBLIC_KEY
               || node->pkt->pkttype == PKT_PUBLIC_SUBKEY);
+
+  if (r_selected_use)
+    *r_selected_use = 0;
 
   pk = node->pkt->pkt.public_key;
 
@@ -1872,6 +1879,15 @@ card_store_subkey (KBNODE node, int use, strlist_t *processed_keys)
       else
         tty_printf(_("Invalid selection.\n"));
     }
+
+  if (!r_selected_use)
+    ;
+  else if (keyno == 1)
+    *r_selected_use = (PUBKEY_USAGE_SIG|PUBKEY_USAGE_CERT);
+  else if (keyno == 2)
+    *r_selected_use = PUBKEY_USAGE_ENC;
+  else
+    *r_selected_use = PUBKEY_USAGE_AUTH;
 
   if ((rc = replace_existing_key_p (&info, keyno)) < 0)
     goto leave;

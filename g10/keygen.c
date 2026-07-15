@@ -7122,6 +7122,89 @@ generate_subkeypair (ctrl_t ctrl, kbnode_t keyblock, const char *algostr,
 }
 
 
+/* Append the subkey SUB_PK to the KEYBLOCK but first verify that this
+ * key is not yet part of that keyblock; return GPG_ERR_EEXIST in that
+ * case.  USE gives the usage to set for the new key (take care: no
+ * check for compatibiliy with the algorithm is done).  Return 0 if
+ * the key was sucessfully added to keyblock.  On error KEYBLOCK might
+ * be modified but missing the key binding; the caller should take
+ * care of this.  */
+gpg_error_t
+append_subkey_to_keyblock (ctrl_t ctrl, kbnode_t keyblock,
+                           PKT_public_key *sub_pk, int use)
+{
+  gpg_error_t err = 0;
+  kbnode_t node;
+  PKT_public_key *pri_pk = NULL;
+  u32 cur_time;
+  PACKET *pkt;
+
+  /* First make a copy of SUB_PK so that we do not interfere with the
+   * callers copy.  */
+  sub_pk = copy_public_key (NULL, sub_pk);
+
+  /* Break out the primary key.  */
+  node = find_kbnode (keyblock, PKT_PUBLIC_KEY);
+  if (!node)
+    {
+      log_error ("Oops; primary key missing in keyblock!\n");
+      err = gpg_error (GPG_ERR_BUG);
+      goto leave;
+    }
+  pri_pk = node->pkt->pkt.public_key;
+
+  cur_time = make_timestamp();
+  /* FIXME: Factor out the next two checks.  */
+  if (pri_pk->timestamp > cur_time)
+    {
+      ulong d = pri_pk->timestamp - cur_time;
+      log_info (d==1 ? _("key has been created %lu second "
+                         "in future (time warp or clock problem)\n")
+                     : _("key has been created %lu seconds "
+                         "in future (time warp or clock problem)\n"), d );
+	if (!opt.ignore_time_conflict)
+          {
+	    err = gpg_error (GPG_ERR_TIME_CONFLICT);
+	    goto leave;
+          }
+    }
+
+  if (pri_pk->version < 4)
+    {
+      log_info (_("Note: creating subkeys for v3 keys "
+                  "is not OpenPGP compliant\n"));
+      err = gpg_error (GPG_ERR_NOT_SUPPORTED);
+      goto leave;
+    }
+
+  /* Check that the key is not yet on the keyblock  */
+  for (node = keyblock; node; node = node->next)
+    if ((node->pkt->pkttype == PKT_PUBLIC_KEY
+         || node->pkt->pkttype == PKT_PUBLIC_SUBKEY)
+        && !cmp_public_keys (node->pkt->pkt.public_key, sub_pk))
+      {
+        log_info (_("key \"%s\" is already on this keyblock\n"),
+                  keystr_from_pk (sub_pk));
+        err = gpg_error (GPG_ERR_EEXIST);
+        goto leave;
+      }
+
+  /* Append a copy of the subkey to the keyblock.  */
+  pkt = xmalloc_clear (sizeof *pkt);
+  pkt->pkttype = PKT_PUBLIC_SUBKEY;
+  pkt->pkt.public_key = sub_pk;
+  sub_pk = NULL;
+  add_kbnode (keyblock, new_kbnode (pkt));
+  /* Write a new keybinding.  */
+  err = write_keybinding (ctrl, keyblock, pri_pk, sub_pk,
+                          use, cur_time, NULL);
+
+ leave:
+  free_public_key (sub_pk);
+  return err;
+}
+
+
 #ifdef ENABLE_CARD_SUPPORT
 /* Generate a subkey on a card. */
 gpg_error_t
