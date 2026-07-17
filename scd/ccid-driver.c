@@ -2117,6 +2117,7 @@ bulk_in (ccid_driver_t handle, unsigned char *buffer, size_t length,
   int msglen;
   int notified = 0;
   int bwi = 1;
+  int retries = 0;
 
   /* Fixme: The next line for the current Valgrind without support
      for USB IOCTLs. */
@@ -2138,6 +2139,13 @@ bulk_in (ccid_driver_t handle, unsigned char *buffer, size_t length,
   if (msglen < 0)
     return CCID_DRIVER_ERR_INV_VALUE;  /* Faulty libusb.  */
   *nread = msglen;
+
+  /* Ignore ZLP (zero length packet) of buggy implementation.  */
+  if (msglen == 0 && retries < 1)
+    {
+      retries++;
+      goto retry;
+    }
 
   if (msglen < 10)
     {
