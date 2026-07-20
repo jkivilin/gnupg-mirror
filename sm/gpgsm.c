@@ -2005,18 +2005,7 @@ main ( int argc, char **argv)
         if (!argc) /* Source is stdin. */
           err = gpgsm_encrypt (&ctrl, recplist, es_stdin, fp);
         else if (argc == 1)  /* Source is the given file. */
-          {
-            estream_t data_fp = es_fopen (*argv, "rb");
-
-            if (!data_fp)
-              {
-                log_error (_("can't open '%s': %s\n"), *argv,
-                           strerror (errno));
-                gpgsm_exit (2);
-              }
-            err = gpgsm_encrypt (&ctrl, recplist, data_fp, fp);
-            es_fclose (data_fp);
-          }
+          err = gpgsm_encrypt (&ctrl, recplist, open_es_fread (*argv, "rb"), fp);
         else
           wrong_args ("--encrypt [datafile]");
 
@@ -2037,18 +2026,8 @@ main ( int argc, char **argv)
         if (!argc) /* Create from stdin. */
           err = gpgsm_sign (&ctrl, signerlist, es_stdin, detached_sig, fp);
         else if (argc == 1) /* From file. */
-          {
-            estream_t data_fp = es_fopen (*argv, "rb");
-
-            if (!data_fp)
-              {
-                log_error (_("can't open '%s': %s\n"), *argv,
-                           strerror (errno));
-                gpgsm_exit (2);
-              }
-            err = gpgsm_sign (&ctrl, signerlist, data_fp, detached_sig, fp);
-            es_fclose (data_fp);
-          }
+          err = gpgsm_sign (&ctrl, signerlist, open_es_fread (*argv, "rb"),
+                            detached_sig, fp);
         else
           wrong_args ("--sign [datafile]");
 
@@ -2087,40 +2066,10 @@ main ( int argc, char **argv)
           /* normal signature from stdin */
           gpgsm_verify (&ctrl, es_stdin, NULL, fp);
         else if (argc == 1)
-          {
-            estream_t in_fp = es_fopen (*argv, "rb");
-
-            if (!in_fp)
-              {
-                log_error (_("can't open '%s': %s\n"), *argv,
-                           strerror (errno));
-                gpgsm_exit (2);
-              }
-            gpgsm_verify (&ctrl, in_fp, NULL, fp); /* std signature */
-            es_fclose (in_fp);
-          }
+          gpgsm_verify (&ctrl, open_es_fread (*argv, "rb"), NULL, fp); /* std signature */
         else if (argc == 2) /* detached signature (sig, detached) */
-          {
-            estream_t in_fp = es_fopen (*argv, "rb");
-            estream_t data_fp = es_fopen (argv[1], "rb");
-
-            if (!in_fp)
-              {
-                log_error (_("can't open '%s': %s\n"), *argv,
-                           strerror (errno));
-                gpgsm_exit (2);
-              }
-            if (!data_fp)
-              {
-                log_error (_("can't open '%s': %s\n"), argv[1],
-                           strerror (errno));
-                gpgsm_exit (2);
-              }
-
-            gpgsm_verify (&ctrl, in_fp, data_fp, NULL);
-            es_fclose (in_fp);
-            es_fclose (data_fp);
-          }
+          gpgsm_verify (&ctrl, open_es_fread (*argv, "rb"),
+                        open_es_fread (argv[1], "rb"), NULL);
         else
           wrong_args ("--verify [signature [detached_data]]");
 
@@ -2154,17 +2103,7 @@ main ( int argc, char **argv)
         if (!argc)
           err = gpgsm_decrypt (&ctrl, es_stdin, fp); /* from stdin */
         else if (argc == 1)
-          {
-            estream_t data_fp = es_fopen (*argv, "rb");
-            if (!data_fp)
-              {
-                log_error (_("can't open '%s': %s\n"), *argv,
-                           strerror (errno));
-                gpgsm_exit (2);
-              }
-            err = gpgsm_decrypt (&ctrl, data_fp, fp); /* from file */
-            es_fclose (data_fp);
-          }
+          err = gpgsm_decrypt (&ctrl, open_es_fread (*argv, "rb"), fp);
         else
           wrong_args ("--decrypt [filename]");
 
