@@ -115,7 +115,8 @@ struct keydb_handle {
 
   /* Various flags.  */
   unsigned int last_ubid_valid:1;
-  unsigned int last_is_ephemeral;  /* Last found key is ephemeral.  */
+  unsigned int last_is_ephemeral:1;  /* Last found key is ephemeral.  */
+  unsigned int last_is_revoked:1;  /* Last found key is revoked.  */
 
   /* The UBID of the last returned keyblock.  */
   unsigned char last_ubid[UBID_LEN];
@@ -1075,17 +1076,26 @@ keydb_get_flags (KEYDB_HANDLE hd, int which, int idx, unsigned int *value)
   if (DBG_CLOCK)
     log_clock ("%s: enter (hd=%p)\n", __func__, hd);
 
-  if (hd->use_keyboxd)
-    {
-      /* FIXME */
-      *value = 0;
-      err = 0;
-      goto leave;
-    }
-
   if ( hd->found < 0 || hd->found >= hd->used)
     {
       err = gpg_error (GPG_ERR_NOTHING_FOUND);
+      goto leave;
+    }
+
+  if (hd->use_keyboxd)
+    {
+      *value = 0;
+      err = 0;
+      if (which == KEYBOX_FLAG_VALIDITY)
+        {
+          if (hd->last_is_revoked)
+            *value = VALIDITY_REVOKED;
+        }
+      else if (which == KEYBOX_FLAG_BLOB)
+        {
+          if (hd->last_is_ephemeral)
+            *value = KEYBOX_FLAG_BLOB_EPHEMERAL;
+        }
       goto leave;
     }
 
@@ -1594,8 +1604,14 @@ search_status_cb (void *opaque, const char *line)
           else
             {
               hd->last_ubid_valid = 1;
+              hd->last_is_ephemeral = 0;
+              hd->last_is_revoked = 0;
               s += n;
-              hd->last_is_ephemeral = (*s == 'e');
+              if (s[0] && s[1])
+                {
+                  hd->last_is_ephemeral = (s[0] == 'e');
+                  hd->last_is_revoked = (s[1] == 'r');
+                }
             }
         }
     }
