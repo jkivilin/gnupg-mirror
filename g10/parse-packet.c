@@ -762,7 +762,7 @@ parse (parse_packet_ctx_t ctx, PACKET *pkt, int onlykeypkts, off_t * retpos,
 
  again:
   log_assert (!pkt->pkt.generic);
-  if (retpos || list_mode)
+  if (retpos || list_mode || opt.verbose > 1)
     {
       pos = iobuf_tell (inp);
       if (retpos)
@@ -1062,6 +1062,17 @@ parse (parse_packet_ctx_t ctx, PACKET *pkt, int onlykeypkts, off_t * retpos,
       /* Unknown packet.  Skip it.  */
       skip_packet (inp, pkttype, pktlen, partial);
       break;
+    }
+
+  if (gpg_err_code (rc) == GPG_ERR_INV_PACKET && opt.verbose > 1)
+    {
+      log_error ("parse_packet: read error: %s\n", gpg_strerror (rc));
+      print_further_info
+        ("packet %u off=%lu ctb=%02x tag=%d hlen=%d plen=%lu%s%s",
+         ctx->n_parsed_packets,
+         (unsigned long)pos, ctb, pkttype, hdrlen, pktlen,
+         partial? (new_ctb ? " partial" : " indeterminate") :"",
+         new_ctb? " new-ctb":"");
     }
 
   /* Store a shallow copy of certain packets in the context.  */
