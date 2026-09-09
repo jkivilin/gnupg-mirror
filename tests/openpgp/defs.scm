@@ -326,7 +326,7 @@
       (for-each (lambda (line) (display line port) (newline port))
 		lines))))
 
-(define (create-gpghome)
+(define (create-gpghome-with-mode modeflag)
   (log "Creating test environment...")
 
   (srandom (getpid))
@@ -355,6 +355,7 @@
 	       "allow-weak-digest-algos"
 	       "allow-old-cipher-algos"
                "ignore-mdc-error"
+               (if (= modeflag 9980) "allow-9980" "")
 	       (if have-opt-always-trust
 		   "no-auto-check-trustdb" "#no-auto-check-trustdb")
 	       (string-append "agent-program "
@@ -375,10 +376,19 @@
 	       (string-append "pinentry-program " (tool 'pinentry))
 	       "disable-scdaemon"))
 
+(define (create-gpghome)
+  (create-gpghome-with-mode 0))
+
+
 ;; Initialize the test environment, install appropriate configuration
 ;; and start the agent, without any keys.
 (define (setup-environment)
   (create-gpghome)
+  (start-agent))
+
+(define (setup-9980-environment)
+  (create-gpghome-with-mode 9980)
+  (create-sample-files)
   (start-agent))
 
 (define (setup-environment-no-atexit)
