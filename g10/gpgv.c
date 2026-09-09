@@ -883,3 +883,10 @@ impex_filter_getval (void *cookie, const char *propname)
   (void)propname;
   return NULL;
 }
+
+nvc_t
+seckey_packet_to_nvc (PKT_public_key *pk)
+{
+  (void)pk;
+  return NULL;
+}

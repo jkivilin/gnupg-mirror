@@ -2169,6 +2169,8 @@ parse_list_options(char *str)
        NULL},
       {"sort-sigs", LIST_SORT_SIGS, NULL,
        NULL},
+      {"debug-show-sexp", LIST_DEBUG_SHOW_SEXP, NULL,
+       NULL},
       {NULL,0,NULL,NULL}
     };
   int i;

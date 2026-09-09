@@ -3595,6 +3595,21 @@ parse_key (IOBUF inp, int pkttype, unsigned long pktlen,
   if (list_mode)
     es_fprintf (listfp, "\tkeyid: %08lX%08lX\n",
                 (ulong) keyid[0], (ulong) keyid[1]);
+  if (list_mode && (pkttype == PKT_SECRET_KEY || pkttype == PKT_SECRET_SUBKEY)
+      && (opt.list_options & LIST_DEBUG_SHOW_SEXP))
+    {
+      nvc_t nvc = seckey_packet_to_nvc (pk);
+
+      es_fputs ("\ts-exp: ", listfp);
+      if (!nvc)
+        es_fputs ("[error getting key]\n", listfp);
+      else
+        {
+          nvc_write (nvc, listfp);
+          nvc_release (nvc);
+        }
+    }
+
 
  leave:
   iobuf_skip_rest (inp, pktlen, 0);

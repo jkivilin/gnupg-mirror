@@ -23,6 +23,7 @@
 #include "../common/types.h"
 #include "../common/iobuf.h"
 #include "../common/util.h"
+#include "../common/name-value.h"
 #include "keydb.h"
 #include "keyedit.h"
 
@@ -415,6 +416,7 @@ const char *impex_filter_getval (void *cookie, const char *propname);
 gpg_error_t transfer_secret_keys (ctrl_t ctrl, struct import_stats_s *stats,
                                   kbnode_t sec_keyblock, int batch, int force,
                                   int only_marked);
+nvc_t seckey_packet_to_nvc (PKT_public_key *pk);
 
 int collapse_uids (kbnode_t *keyblock);
 int collapse_subkeys (kbnode_t *keyblock);

@@ -3239,6 +3239,34 @@ transfer_secret_keys (ctrl_t ctrl, struct import_stats_s *stats,
 }
 
 
+/* Create a name-value container from a secret (sub)key packet PK.
+ * Callers needs to release it.  This function can be used to list
+ * secret keys as s-expression in a format as used for our private
+ * keys.  Works only with unprotected keys.  Callers needs to release
+ * the result.  On error NULL is returned.  */
+nvc_t
+seckey_packet_to_nvc (PKT_public_key *pk)
+{
+  gcry_sexp_t mysexp;
+  nvc_t result;
+
+  if (build_mode1003_sexp (pk, &mysexp) || !mysexp)
+    return NULL;
+
+  result = nvc_new_private_key ();
+  if (result)
+    {
+      if (nvc_set_private_key (result, mysexp))
+        {
+          nvc_release (result);
+          result = NULL;
+        }
+    }
+  gcry_sexp_release (mysexp);
+  return result;
+}
+
+
 /* Walk a secret keyblock and produce a public keyblock out of it.
  * Returns a new node or NULL on error.  Modifies the tag field of the
  * nodes.  */
