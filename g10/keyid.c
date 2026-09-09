@@ -131,8 +131,12 @@ pubkey_string (PKT_public_key *pk, char *buffer, size_t bufsize)
     case PUBKEY_ALGO_ED25519:      fixed = "ietf27";     break;
     case PUBKEY_ALGO_MLD65_25519:  fixed = "mld65";      break;
     case PUBKEY_ALGO_MLD87_448:    fixed = "mld87";      break;
-    case PUBKEY_ALGO_MLK768_25519: fixed = "mlk768";     break;
-    case PUBKEY_ALGO_MLK1024_448:  fixed = "mlk1024";    break;
+    case PUBKEY_ALGO_MLK768_25519: fixed = "mlk768";        break;
+    case PUBKEY_ALGO_MLK768_NP384: fixed = "mlk768_np384";  break;
+    case PUBKEY_ALGO_MLK768_BP384: fixed = "mlk768_bp384";  break;
+    case PUBKEY_ALGO_MLK1024_448:  fixed = "mlk1024";       break;
+    case PUBKEY_ALGO_MLK1024_NP521:fixed = "mlk1024_np521"; break;
+    case PUBKEY_ALGO_MLK1024_BP512:fixed = "mlk1024_bp512"; break;
     }
 
 
@@ -1356,8 +1360,7 @@ keygrip_from_pk (PKT_public_key *pk, unsigned char *array, int get_second)
                get_second?" (second)":"", pk->version, pk->pubkey_algo);
 
   if (get_second && !(pk->pubkey_algo == PUBKEY_ALGO_KYBER
-                      || pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-                      || pk->pubkey_algo == PUBKEY_ALGO_MLK1024_448))
+                      || IS_PUBKEY_ALGO_MLK (pk->pubkey_algo)))
     return gpg_error (GPG_ERR_FALSE);
 
   switch (pk->pubkey_algo)
@@ -1456,6 +1459,28 @@ keygrip_from_pk (PKT_public_key *pk, unsigned char *array, int get_second)
                                pk->pkey[0]);
       break;
 
+    case PUBKEY_ALGO_MLK768_NP384:
+      if (get_second)
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(kyber768(p%m)))",
+                               pk->pkey[1]);
+      else
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(ecc(curve nistp384)(q%m)))",
+                               pk->pkey[0]);
+      break;
+
+    case PUBKEY_ALGO_MLK768_BP384:
+      if (get_second)
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(kyber768(p%m)))",
+                               pk->pkey[1]);
+      else
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(ecc(curve bp384)(q%m)))",
+                               pk->pkey[0]);
+      break;
+
     case PUBKEY_ALGO_MLK1024_448:
       if (get_second)
         err = gcry_sexp_build (&s_pkey, NULL,
@@ -1463,7 +1488,29 @@ keygrip_from_pk (PKT_public_key *pk, unsigned char *array, int get_second)
                                pk->pkey[1]);
       else
         err = gcry_sexp_build (&s_pkey, NULL,
-                               "(public-key(ecc(curve X448)(q%m)",
+                               "(public-key(ecc(curve X448)(q%m)))",
+                               pk->pkey[0]);
+      break;
+
+    case PUBKEY_ALGO_MLK1024_NP521:
+      if (get_second)
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(kyber1024(p%m)))",
+                               pk->pkey[1]);
+      else
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(ecc(curve nistp521)(q%m)))",
+                               pk->pkey[0]);
+      break;
+
+    case PUBKEY_ALGO_MLK1024_BP512:
+      if (get_second)
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(kyber1024(p%m)))",
+                               pk->pkey[1]);
+      else
+        err = gcry_sexp_build (&s_pkey, NULL,
+                               "(public-key(ecc(curve bp512)(q%m)))",
                                pk->pkey[0]);
       break;
 
@@ -1508,18 +1555,19 @@ hexkeygrip_from_pk (PKT_public_key *pk, char **r_grip)
   char *buf;
   unsigned char grip[KEYGRIP_LEN];
   unsigned char grip2[KEYGRIP_LEN];
+  int composite = 0;
 
   *r_grip = NULL;
   err = keygrip_from_pk (pk, grip, 0);
   if (!err)
     {
       if (pk->pubkey_algo == PUBKEY_ALGO_KYBER
-          || pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-          || pk->pubkey_algo == PUBKEY_ALGO_MLK1024_448)
+          || IS_PUBKEY_ALGO_MLK (pk->pubkey_algo))
         {
           err = keygrip_from_pk (pk, grip2, 1);
           if (err)
             goto leave;
+          composite = 1;
           buf = xtrymalloc (2 * KEYGRIP_LEN * 2 + 1 + 1);
         }
       else
@@ -1532,9 +1580,7 @@ hexkeygrip_from_pk (PKT_public_key *pk, char **r_grip)
         }
 
       bin2hex (grip, KEYGRIP_LEN, buf);
-      if (pk->pubkey_algo == PUBKEY_ALGO_KYBER
-          || pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-          || pk->pubkey_algo == PUBKEY_ALGO_MLK1024_448)
+      if (composite)
         {
           buf[2*KEYGRIP_LEN] = ',';
           bin2hex (grip2, KEYGRIP_LEN, buf+2*KEYGRIP_LEN+1);

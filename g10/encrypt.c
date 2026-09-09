@@ -155,9 +155,8 @@ create_dek_with_warnings (pk_list_t pk_list)
           int non_kyber_pk = 0;
           for ( ; pk_list; pk_list = pk_list->next)
             if (!(pk_list->pk->pubkey_algo == PUBKEY_ALGO_KYBER
-                || (RFC9980
-                   && (pk_list->pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-                      || pk_list->pk->pubkey_algo == PUBKEY_ALGO_MLK1024_448))))
+                  || (RFC9980
+                      && IS_PUBKEY_ALGO_MLK (pk_list->pk->pubkey_algo))))
               non_kyber_pk += 1;
           if (!non_kyber_pk)
             dek->algo = CIPHER_ALGO_AES256;
@@ -454,8 +453,7 @@ use_rfc9980_seipdv2 (pk_list_t pk_list)
     {
       pk = pk_list->pk;
       if (!(pk->pubkey_algo == PUBKEY_ALGO_X25519
-            || pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-            || pk->pubkey_algo == PUBKEY_ALGO_MLK1024_448))
+            || IS_PUBKEY_ALGO_MLK (pk->pubkey_algo)))
         return 0;  /* No.  */
     }
   return 1; /* Yes.  */
@@ -1328,8 +1326,7 @@ write_pubkey_enc (ctrl_t ctrl,
   size_t fprlen;
 
   if (pk->pubkey_algo == PUBKEY_ALGO_X25519
-      || pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-      || pk->pubkey_algo == PUBKEY_ALGO_MLK1024_448)
+      || IS_PUBKEY_ALGO_MLK (pk->pubkey_algo))
     is_rfc9980 = 1;
   else
     is_rfc9980 = 0;

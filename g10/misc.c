@@ -778,7 +778,11 @@ openpgp_pk_test_algo2 (pubkey_algo_t algo, unsigned int use)
       break;
 
     case PUBKEY_ALGO_MLK768_25519:
+    case PUBKEY_ALGO_MLK768_NP384:
+    case PUBKEY_ALGO_MLK768_BP384:
     case PUBKEY_ALGO_MLK1024_448:
+    case PUBKEY_ALGO_MLK1024_NP521:
+    case PUBKEY_ALGO_MLK1024_BP512:
       if (RFC9980)
         ga = GCRY_PK_KEM;
       break;
@@ -844,7 +848,11 @@ openpgp_pk_algo_usage ( int algo )
 
       case PUBKEY_ALGO_KYBER:
       case PUBKEY_ALGO_MLK768_25519:
+      case PUBKEY_ALGO_MLK768_NP384:
+      case PUBKEY_ALGO_MLK768_BP384:
       case PUBKEY_ALGO_MLK1024_448:
+      case PUBKEY_ALGO_MLK1024_NP521:
+      case PUBKEY_ALGO_MLK1024_BP512:
           use = PUBKEY_USAGE_ENC | PUBKEY_USAGE_RENC;
           break;
 
@@ -880,7 +888,11 @@ openpgp_pk_algo_name (pubkey_algo_t algo)
     case PUBKEY_ALGO_X25519:    return "ietf25";
     case PUBKEY_ALGO_ED25519:   return "ietf27";
     case PUBKEY_ALGO_MLK768_25519: return "mlk768";
+    case PUBKEY_ALGO_MLK768_NP384: return "mlk768_np384";
+    case PUBKEY_ALGO_MLK768_BP384: return "mlk768_bp384";
     case PUBKEY_ALGO_MLK1024_448:  return "mlk1024";
+    case PUBKEY_ALGO_MLK1024_NP521:return "mlk1024_np521";
+    case PUBKEY_ALGO_MLK1024_BP512:return "mlk1024_bp512";
     default: return "?";
     }
 }
@@ -1792,9 +1804,10 @@ pubkey_get_npkey (pubkey_algo_t algo)
     case PUBKEY_ALGO_KYBER:     return 3;
     case PUBKEY_ALGO_X25519:       return 1;
     case PUBKEY_ALGO_ED25519:      return 1;
-    case PUBKEY_ALGO_MLK768_25519: return 2;
-    case PUBKEY_ALGO_MLK1024_448:  return 2;
-    default: return 0;
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algo))
+        return 2;
+      return 0;
     }
 }
 
@@ -1815,11 +1828,12 @@ pubkey_get_nskey (pubkey_algo_t algo)
     case PUBKEY_ALGO_ELGAMAL:   return 4;
     case PUBKEY_ALGO_EDDSA:     return 3;
     case PUBKEY_ALGO_KYBER:     return 5;
-    case PUBKEY_ALGO_X25519:       return 2;
-    case PUBKEY_ALGO_ED25519:      return 2;
-    case PUBKEY_ALGO_MLK768_25519: return 4;
-    case PUBKEY_ALGO_MLK1024_448:  return 4;
-    default: return 0;
+    case PUBKEY_ALGO_X25519:    return 2;
+    case PUBKEY_ALGO_ED25519:   return 2;
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algo))
+        return 4;
+      return 0;
     }
 }
 
@@ -1861,9 +1875,10 @@ pubkey_get_nenc (pubkey_algo_t algo)
     case PUBKEY_ALGO_EDDSA:     return 0;
     case PUBKEY_ALGO_KYBER:     return 3;
     case PUBKEY_ALGO_X25519:    return 2;
-    case PUBKEY_ALGO_MLK768_25519: return 3;
-    case PUBKEY_ALGO_MLK1024_448:  return 3;
-    default: return 0;
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algo))
+        return 3;
+      return 0;
     }
 }
 

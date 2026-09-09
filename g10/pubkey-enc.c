@@ -138,8 +138,7 @@ get_session_key (ctrl_t ctrl, struct seskey_enc_list *list, DEK *dek,
                 || k->u.pub.pubkey_algo == PUBKEY_ALGO_RSA_E
                 || k->u.pub.pubkey_algo == PUBKEY_ALGO_ELGAMAL
                 || k->u.pub.pubkey_algo == PUBKEY_ALGO_X25519
-                || k->u.pub.pubkey_algo == PUBKEY_ALGO_MLK768_25519
-                || k->u.pub.pubkey_algo == PUBKEY_ALGO_MLK1024_448))
+                || IS_PUBKEY_ALGO_MLK (k->u.pub.pubkey_algo)))
             continue;
 
           if (openpgp_pk_test_algo2 (k->u.pub.pubkey_algo, PUBKEY_USAGE_ENC))
@@ -273,8 +272,7 @@ get_it (ctrl_t ctrl, struct seskey_enc_list *enc, DEK *dek,
 
   if (enc->u.pub.version == 6 && !enc->u.pub.seskey_algo && RFC9980
       && (sk->pubkey_algo == PUBKEY_ALGO_X25519
-          || sk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-          || sk->pubkey_algo == PUBKEY_ALGO_MLK1024_448))
+          || IS_PUBKEY_ALGO_MLK (sk->pubkey_algo)))
     {
       if (seipdv2_cipher_algo)
         dek->algo = seipdv2_cipher_algo;
@@ -347,8 +345,7 @@ get_it (ctrl_t ctrl, struct seskey_enc_list *enc, DEK *dek,
                                enc->u.pub.data[2],
                                enc->u.pub.seskey_algo, fixedlen, fixedinfo);
     }
-  else if (sk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-           || sk->pubkey_algo == PUBKEY_ALGO_MLK1024_448)
+  else if (IS_PUBKEY_ALGO_MLK (sk->pubkey_algo))
     {
       char fixedinfo[1+22]; /* algid || domSep || len(domSep) */
 
@@ -405,8 +402,7 @@ get_it (ctrl_t ctrl, struct seskey_enc_list *enc, DEK *dek,
   frameidx = 0;
 
   if (sk->pubkey_algo == PUBKEY_ALGO_KYBER
-      || sk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-      || sk->pubkey_algo == PUBKEY_ALGO_MLK1024_448)
+      || IS_PUBKEY_ALGO_MLK (sk->pubkey_algo))
     {
       if (nframe != 32 && opt.flags.require_pqc_encryption)
         {

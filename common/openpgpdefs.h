@@ -167,7 +167,8 @@ typedef enum
     PUBKEY_ALGO_RSA         =  1,
     PUBKEY_ALGO_RSA_E       =  2, /* RSA encrypt only (legacy). */
     PUBKEY_ALGO_RSA_S       =  3, /* RSA sign only (legacy).    */
-    PUBKEY_ALGO_KYBER       =  8, /* Kyber (FIPS-203 final)     */
+    PUBKEY_ALGO_KYBER       =  8, /* Kyber (FIPS-203)           */
+    PUBKEY_ALGO_DILITHIUM   =  9, /* Dilithium (FIPS-204)       */
     PUBKEY_ALGO_ELGAMAL_E   = 16, /* Elgamal encrypt only.      */
     PUBKEY_ALGO_DSA         = 17,
     PUBKEY_ALGO_ECDH        = 18, /* RFC-6637  */
@@ -178,14 +179,31 @@ typedef enum
     PUBKEY_ALGO_X25519      = 25, /* X25519 (RFC9580).               */
     PUBKEY_ALGO_ED25519     = 27, /* ED25519 (RFC9580).              */
     /*                        29     (was fips203.ipd.2023-08-24 in 1.5.0)   */
-    PUBKEY_ALGO_MLD65_25519 = 30, /* ML-DSA-65+Ed25519 (RFC9980)     */
-    PUBKEY_ALGO_MLD87_448   = 31, /* ML-DSA-65+Ed25519 (RFC9980)     */
-    PUBKEY_ALGO_MLK768_25519= 35, /* ML-KEM-768+X25519 (RFC9980)     */
-    PUBKEY_ALGO_MLK1024_448 = 36, /* ML-KEM-1024+X448 (RFC9980)      */
+    PUBKEY_ALGO_MLD65_25519  =30, /* ML-DSA-65+Ed25519 (RFC9980)      */
+    PUBKEY_ALGO_MLD87_448    =31, /* ML-DSA-87+Ed448 (RFC9980)        */
+    PUBKEY_ALGO_MLK768_25519 =35, /* ML-KEM-768+X25519 (RFC9980)      */
+    PUBKEY_ALGO_MLK1024_448  =36, /* ML-KEM-1024+X448 (RFC9980)       */
+    PUBKEY_ALGO_MLK768_NP384 =37, /* ML-KEM-768+ECDH-NIST-P-384       */
+    PUBKEY_ALGO_MLK1024_NP521=38, /* ML-KEM-1024+ECDH-NIST-P-521      */
+    PUBKEY_ALGO_MLK768_BP384 =39, /* ML-KEM-768+ECDH-brainpoolP384r1  */
+    PUBKEY_ALGO_MLK1024_BP512=40, /* ML-KEM-1024+ECDH-brainpoolP512r1 */
 
     PUBKEY_ALGO_PRIVATE10   = 110
   }
 pubkey_algo_t;
+
+#define IS_PUBKEY_ALGO_MLK768(a)      \
+  ((a) == PUBKEY_ALGO_MLK768_25519    \
+   || (a) == PUBKEY_ALGO_MLK768_NP384 \
+   || (a) == PUBKEY_ALGO_MLK768_BP384)
+
+#define IS_PUBKEY_ALGO_MLK1024(a)      \
+  ((a) == PUBKEY_ALGO_MLK1024_448      \
+   || (a) == PUBKEY_ALGO_MLK1024_NP521 \
+   || (a) == PUBKEY_ALGO_MLK1024_BP512)
+
+#define IS_PUBKEY_ALGO_MLK(a)  \
+  (IS_PUBKEY_ALGO_MLK768 ((a)) || IS_PUBKEY_ALGO_MLK1024 ((a)))
 
 
 typedef enum

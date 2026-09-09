@@ -571,8 +571,7 @@ do_encrypt_kem (PKT_public_key *pk, gcry_mpi_t data, int seskey_algo,
   only_ecc = 0;
   if (pk->pubkey_algo == PUBKEY_ALGO_X25519)
     is_rfc9980 = only_ecc = 1;
-  else if (pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-      || pk->pubkey_algo == PUBKEY_ALGO_MLK1024_448)
+  else if (IS_PUBKEY_ALGO_MLK (pk->pubkey_algo))
     is_rfc9980 = 1;
   else
     is_rfc9980 = 0;
@@ -582,9 +581,20 @@ do_encrypt_kem (PKT_public_key *pk, gcry_mpi_t data, int seskey_algo,
    * directly from the PK->data elements.  */
 
   if (is_rfc9980)
-    curve = (pk->pubkey_algo == PUBKEY_ALGO_X25519
-             || pk->pubkey_algo == PUBKEY_ALGO_MLK768_25519)?
-      "ietf25" : "X448";
+    {
+      /* Note: We need t use the canonical names here.  */
+      switch (pk->pubkey_algo)
+        {
+        case PUBKEY_ALGO_X25519:
+        case PUBKEY_ALGO_MLK768_25519:  curve = "ietf25";          break;
+        case PUBKEY_ALGO_MLK768_NP384:  curve = "NIST P-384";      break;
+        case PUBKEY_ALGO_MLK768_BP384:  curve = "brainpoolP384r1"; break;
+        case PUBKEY_ALGO_MLK1024_448:   curve = "X448";            break;
+        case PUBKEY_ALGO_MLK1024_NP521: curve = "NIST P-521";      break;
+        case PUBKEY_ALGO_MLK1024_BP512: curve = "brainpoolP512r1"; break;
+        default: curve = "e_no_such_curve"; break;
+        }
+    }
   else
     {
       ecc_oid = openpgp_oid_to_str (pk->pkey[0]);
@@ -1229,8 +1239,7 @@ pk_encrypt (PKT_public_key *pk, gcry_mpi_t data, int seskey_algo,
   else if (algo == PUBKEY_ALGO_RSA || algo == PUBKEY_ALGO_RSA_E)
     return do_encrypt_rsa_elg (pk, data, resarr);
   else if (RFC9980 && (algo == PUBKEY_ALGO_X25519
-                       || algo == PUBKEY_ALGO_MLK768_25519
-                       || algo == PUBKEY_ALGO_MLK1024_448))
+                       || IS_PUBKEY_ALGO_MLK (algo)))
     return do_encrypt_kem (pk, data, seskey_algo, resarr);
   else
     return gpg_error (GPG_ERR_PUBKEY_ALGO);

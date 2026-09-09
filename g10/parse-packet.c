@@ -1666,21 +1666,25 @@ parse_pubkeyenc (IOBUF inp, int pkttype, unsigned long pktlen,
       if (rc)
         goto leave;
     }
-  else if (k->pubkey_algo == PUBKEY_ALGO_MLK768_25519
-           || k->pubkey_algo == PUBKEY_ALGO_MLK1024_448)
+  else if (IS_PUBKEY_ALGO_MLK (k->pubkey_algo))
     {
       log_assert (ndata == 3);
       /* Get the ephemeral public key.  */
-      rc = read_raw_octet_string (inp, &pktlen, 0,
-                                  (k->pubkey_algo == PUBKEY_ALGO_MLK768_25519 ?
-                                   32 :56),
-                                  0, k->data + 0);
+      rc = read_raw_octet_string
+        (inp, &pktlen, 0,
+         (k->pubkey_algo == PUBKEY_ALGO_MLK768_25519? 32 :
+          k->pubkey_algo == PUBKEY_ALGO_MLK768_NP384? 97 :
+          k->pubkey_algo == PUBKEY_ALGO_MLK768_BP384? 97 :
+          k->pubkey_algo == PUBKEY_ALGO_MLK1024_448?  56 :
+          k->pubkey_algo == PUBKEY_ALGO_MLK1024_NP521?  133 :
+          k->pubkey_algo == PUBKEY_ALGO_MLK1024_BP512?  129 : 0),
+         0, k->data + 0);
       if (rc)
         goto leave;
 
       /* Get the Kyber ciphertext.  */
       rc = read_raw_octet_string (inp, &pktlen, 0,
-                                  (k->pubkey_algo == PUBKEY_ALGO_MLK768_25519 ?
+                                  (IS_PUBKEY_ALGO_MLK768 (k->pubkey_algo)?
                                    1088 : 1568),
                                   0, k->data + 1);
       if (rc)
@@ -3063,10 +3067,32 @@ parse_key (IOBUF inp, int pkttype, unsigned long pktlen,
 	      err = read_raw_octet_string (inp, &pktlen, 0, i==0? 32 : 1184,
                                            0, pk->pkey+i);
             }
+          else if ((algorithm == PUBKEY_ALGO_MLK768_NP384
+                    || algorithm == PUBKEY_ALGO_MLK768_BP384) && RFC9980)
+            {
+	      err = read_raw_octet_string (inp, &pktlen, 0, i==0? 97 : 1184,
+                                           0, pk->pkey+i);
+            }
           else if (algorithm == PUBKEY_ALGO_MLK1024_448 && RFC9980)
             {
               if (is_v6)
                 err = read_raw_octet_string (inp, &pktlen, 0, i==0? 56 : 1568,
+                                             0, pk->pkey+i);
+              else
+                err = gpg_error (GPG_ERR_INV_PACKET);
+            }
+          else if (algorithm == PUBKEY_ALGO_MLK1024_NP521 && RFC9980)
+            {
+              if (is_v6)
+                err = read_raw_octet_string (inp, &pktlen, 0, i==0? 133 : 1568,
+                                             0, pk->pkey+i);
+              else
+                err = gpg_error (GPG_ERR_INV_PACKET);
+            }
+          else if (algorithm == PUBKEY_ALGO_MLK1024_BP512 && RFC9980)
+            {
+              if (is_v6)
+                err = read_raw_octet_string (inp, &pktlen, 0, i==0? 129 : 1568,
                                              0, pk->pkey+i);
               else
                 err = gpg_error (GPG_ERR_INV_PACKET);
@@ -3476,11 +3502,36 @@ parse_key (IOBUF inp, int pkttype, unsigned long pktlen,
                                                i == npkey? 32 : 64,
                                                0, pk->pkey+i);
                 }
+              else if ((algorithm == PUBKEY_ALGO_MLK768_NP384
+                        || algorithm == PUBKEY_ALGO_MLK768_BP384) && RFC9980)
+                {
+                  err = read_raw_octet_string (inp, &pktlen, 0,
+                                               i == npkey? 48 : 64,
+                                               0, pk->pkey+i);
+                }
               else if (algorithm == PUBKEY_ALGO_MLK1024_448 && RFC9980)
                 {
                   if (is_v6)
                     err = read_raw_octet_string (inp, &pktlen, 0,
                                                  i == npkey? 56 : 64,
+                                                 0, pk->pkey+i);
+                  else
+                    err = gpg_error (GPG_ERR_INV_PACKET);
+                }
+              else if (algorithm == PUBKEY_ALGO_MLK1024_NP521 && RFC9980)
+                {
+                  if (is_v6)
+                    err = read_raw_octet_string (inp, &pktlen, 0,
+                                                 i == npkey? 66 : 64,
+                                                 0, pk->pkey+i);
+                  else
+                    err = gpg_error (GPG_ERR_INV_PACKET);
+                }
+              else if (algorithm == PUBKEY_ALGO_MLK1024_BP512 && RFC9980)
+                {
+                  if (is_v6)
+                    err = read_raw_octet_string (inp, &pktlen, 0,
+                                                 i == npkey? 64 : 64,
                                                  0, pk->pkey+i);
                   else
                     err = gpg_error (GPG_ERR_INV_PACKET);

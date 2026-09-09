@@ -267,18 +267,40 @@ keygrip_from_keyparm (int algo, struct keyparm_s *kp, unsigned char *grip)
       break;
 
     case PUBKEY_ALGO_MLK768_25519:
-      /* There is no space in the BLOB for a second grip, thus for now
-       * we store only the ECC keygrip.  */
+      /* There is no space in the BLOB for the a second grip of a
+       * composite algo, thus for now we store only the ECC keygrip.  */
       err = gcry_sexp_build (&s_pkey, NULL,
                              "(public-key(ecc(curve ietf25)(q%b)))",
                              kp[0].len, kp[0].mpi);
       break;
 
+    case PUBKEY_ALGO_MLK768_NP384:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve nistp384)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK768_BP384:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve bp384)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
     case PUBKEY_ALGO_MLK1024_448:
-      /* There is no space in the BLOB for a second grip, thus for now
-       * we store only the ECC keygrip.  */
       err = gcry_sexp_build (&s_pkey, NULL,
                              "(public-key(ecc(curve X448)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK1024_NP521:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve nistp521)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK1024_BP512:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve bp512)(q%b)))",
                              kp[0].len, kp[0].mpi);
       break;
 
@@ -394,12 +416,14 @@ parse_key (const unsigned char *data, size_t datalen,
       npkey = 3;
       is_kyber = 1;
       break;
-    case PUBKEY_ALGO_MLK768_25519:
-    case PUBKEY_ALGO_MLK1024_448:
-      npkey = 2;
-      is_9980 = 1;
-      break;
-    default: /* Unknown algorithm. */
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algorithm))
+        {
+          npkey = 2;
+          is_9980 = 1;
+          break;
+        }
+      /* Unknown algorithm. */
       return gpg_error (GPG_ERR_UNKNOWN_ALGORITHM);
     }
 
@@ -448,8 +472,15 @@ parse_key (const unsigned char *data, size_t datalen,
             nbytes = 32;
           else if (algorithm == PUBKEY_ALGO_MLK768_25519)
             nbytes = !i? 32 : 1184;
+          else if (algorithm == PUBKEY_ALGO_MLK768_NP384
+                   || algorithm == PUBKEY_ALGO_MLK768_BP384)
+            nbytes = !i? 97 : 1184;
           else if (algorithm == PUBKEY_ALGO_MLK1024_448)
             nbytes = !i? 56 : 1568;
+          else if (algorithm == PUBKEY_ALGO_MLK1024_NP521)
+            nbytes = !i? 133 : 1568;
+          else if (algorithm == PUBKEY_ALGO_MLK1024_BP512)
+            nbytes = !i? 129 : 1568;
           else
             BUG ();
           if (datalen < nbytes)

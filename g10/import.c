@@ -2775,8 +2775,24 @@ build_mode1003_sexp (PKT_public_key *pk, gcry_sexp_t *result)
       err = build_sexp_from_mlk (&skey, pk, "kyber768", "ietf25");
       break;
 
+    case PUBKEY_ALGO_MLK768_NP384:
+      err = build_sexp_from_mlk (&skey, pk, "kyber768", "nistp384");
+      break;
+
+    case PUBKEY_ALGO_MLK768_BP384:
+      err = build_sexp_from_mlk (&skey, pk, "kyber768", "brainpoolP384r1");
+      break;
+
     case PUBKEY_ALGO_MLK1024_448:
       err = build_sexp_from_mlk (&skey, pk, "kyber1024", "X448");
+      break;
+
+    case PUBKEY_ALGO_MLK1024_NP521:
+      err = build_sexp_from_mlk (&skey, pk, "kyber1024", "nistp521");
+      break;
+
+    case PUBKEY_ALGO_MLK1024_BP512:
+      err = build_sexp_from_mlk (&skey, pk, "kyber1024", "brainpoolP512r1");
       break;
 
     default:
