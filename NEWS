@@ -1,8 +1,17 @@
-Noteworthy changes in version 2.2.56 (unreleased)
+Noteworthy changes in version 2.2.56 (2026-09-10)
 -------------------------------------------------
 
+  * dirmngr: Make the LDAP upload flags also work for KS_SEARCH.
+    [T7866]
 
-  Release-info: https://dev.gnupg.org/T????
+  * gpg: Implement the LDAP AKL mechanism.   [T7133]
+
+  * gpgconf,w32: Show more registry keys of GpgOL.  [rGa570827330]
+
+  * gpgconf: Print the content of a versioninfo.txt with -vV.
+    [rGa1f08f40d7]
+
+  Release-info: https://dev.gnupg.org/T8450
 
 
 Noteworthy changes in version 2.2.55 (2026-08-27)
