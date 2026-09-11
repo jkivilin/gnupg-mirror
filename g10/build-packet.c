@@ -734,9 +734,9 @@ do_key (iobuf_t out, int ctb, PKT_public_key *pk)
           /* Write a four-octet count prefixed Kyber public key.  */
           err = gpg_mpi_write_opaque_32 (a, pk->pkey[2], NULL);
         }
-      else if (RFC9980 && (IS_PUBKEY_ALGO_MLK (pk->pubkey_algo)
-                           || pk->pubkey_algo == PUBKEY_ALGO_ED25519
-                           || pk->pubkey_algo == PUBKEY_ALGO_X25519))
+      else if (IS_PUBKEY_ALGO_MLK (pk->pubkey_algo)
+               || pk->pubkey_algo == PUBKEY_ALGO_ED25519
+               || pk->pubkey_algo == PUBKEY_ALGO_X25519)
         {
           err = gpg_mpi_write_opaque_nohdr (a, pk->pkey[i]);
         }

@@ -38,6 +38,11 @@
 #include "../common/mbox-util.h"
 
 
+/* It is better to always allow parsing the 9980 packets but we keep
+ * the macro for documentaion reasons.  */
+#undef RFC9980
+#define RFC9980 1
+
 static int mpi_print_mode;
 static int list_mode;
 static estream_t listfp;
