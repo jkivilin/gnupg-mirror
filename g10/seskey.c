@@ -86,7 +86,9 @@ encode_session_key (int openpgp_pk_algo, DEK *dek, unsigned int nbits)
   if (DBG_CRYPTO)
     log_debug ("encode_session_key: encoding %d byte DEK", dek->keylen);
 
-  if (openpgp_pk_algo == PUBKEY_ALGO_KYBER)
+  if (openpgp_pk_algo == PUBKEY_ALGO_KYBER
+      || openpgp_pk_algo == PUBKEY_ALGO_X25519
+      || IS_PUBKEY_ALGO_MLK (openpgp_pk_algo))
     {
       /* Straightforward encoding w/o extra checksum as used by ECDH.  */
       nframe = dek->keylen;
@@ -277,7 +279,8 @@ encode_md_value (PKT_public_key *pk, gcry_md_hd_t md, int hash_algo)
   log_assert (hash_algo);
   log_assert (pk);
 
-  if (pk->pubkey_algo == PUBKEY_ALGO_EDDSA)
+  if (pk->pubkey_algo == PUBKEY_ALGO_EDDSA
+      || pk->pubkey_algo == PUBKEY_ALGO_ED25519)
     {
       /* EdDSA signs data of arbitrary length.  Thus no special
          treatment is required.  */

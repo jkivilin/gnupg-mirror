@@ -242,6 +242,7 @@ enum cmd_and_opt_values
     oDebugSetIobufSize,
     oDebugAllowLargeChunks,
     oDebugIgnoreExpiration,
+    oDebugNoLibgcrypt,
     oStatusFD,
     oStatusFile,
     oAttributeFD,
@@ -260,6 +261,7 @@ enum cmd_and_opt_values
     oPGP7,
     oPGP8,
     oDE_VS,
+    oFIPS,
     oMinRSALength,
     oRFC2440Text,
     oNoRFC2440Text,
@@ -439,6 +441,7 @@ enum cmd_and_opt_values
     oDisableDSA2,
     oAllowWeakDigestAlgos,
     oAllowWeakKeySignatures,
+    oAllow9980,
     oFakedSystemTime,
     oNoAutostart,
     oPrintDANERecords,
@@ -624,6 +627,7 @@ static gpgrt_opt_t opts[] = {
   ARGPARSE_s_n (oDebugIOLBF, "debug-iolbf", "@"),
   ARGPARSE_s_u (oDebugSetIobufSize, "debug-set-iobuf-size", "@"),
   ARGPARSE_s_u (oDebugAllowLargeChunks, "debug-allow-large-chunks", "@"),
+  ARGPARSE_s_n (oDebugNoLibgcrypt, "debug-no-libgcrypt", "@"),
   ARGPARSE_s_s (oDisplayCharset, "display-charset", "@"),
   ARGPARSE_s_s (oDisplayCharset, "charset", "@"),
   ARGPARSE_conffile (oOptions, "options", N_("|FILE|read options from FILE")),
@@ -921,6 +925,7 @@ static gpgrt_opt_t opts[] = {
   ARGPARSE_s_s (oCipherAlgo, "cipher-algo", "@"),
   ARGPARSE_s_s (oDigestAlgo, "digest-algo", "@"),
   ARGPARSE_s_s (oCertDigestAlgo, "cert-digest-algo", "@"),
+  ARGPARSE_s_n (oAllow9980,      "allow-9980", "@"),
   ARGPARSE_s_n (oRequirePQCEncryption, "require-pqc-encryption", "@"),
   ARGPARSE_s_n (oDisablePQCEncryption, "disable-pqc-encryption", "@"),
 
@@ -1111,6 +1116,7 @@ static int opt_log_time;
 /* Collection of options used only in this module.  */
 static struct {
   unsigned int forbid_gen_key;
+  unsigned int no_libgcrypt_debug;
 } mopt;
 
 
@@ -1413,9 +1419,9 @@ set_debug (const char *level)
     memory_debug_mode = 1;
   if ((opt.debug & DBG_MEMSTAT_VALUE))
     memory_stat_debug_mode = 1;
-  if (DBG_MPI)
+  if (DBG_MPI && !mopt.no_libgcrypt_debug)
     gcry_control (GCRYCTL_SET_DEBUG_FLAGS, 2);
-  if (DBG_CRYPTO)
+  if (DBG_CRYPTO && !mopt.no_libgcrypt_debug)
     gcry_control (GCRYCTL_SET_DEBUG_FLAGS, 1);
   if ((opt.debug & DBG_IOBUF_VALUE))
     iobuf_debug_mode = 1;
@@ -2042,6 +2048,9 @@ gpgconf_list (void)
              (opt.compliance==CO_DE_VS
               && gnupg_rng_is_compliant (CO_DE_VS))?
              atoi (gnupg_status_compliance_flag (CO_DE_VS)) : 0);
+  es_printf ("compliance_fips:%lu:%d:\n", GC_OPT_FLAG_DEFAULT,
+             (opt.compliance==CO_FIPS)?
+             atoi (gnupg_status_compliance_flag (CO_FIPS)) : 0);
 
   es_printf ("use_keyboxd:%lu:%d:\n", GC_OPT_FLAG_DEFAULT, opt.use_keyboxd);
 
@@ -2159,6 +2168,8 @@ parse_list_options(char *str)
       {"show-only-fpr-mbox",LIST_SHOW_ONLY_FPR_MBOX, NULL,
        NULL},
       {"sort-sigs", LIST_SORT_SIGS, NULL,
+       NULL},
+      {"debug-show-sexp", LIST_DEBUG_SHOW_SEXP, NULL,
        NULL},
       {NULL,0,NULL,NULL}
     };
@@ -2294,7 +2305,8 @@ static struct gnupg_compliance_option compliance_options[] =
     { "pgp6",       oPGP7 },
     { "pgp7",       oPGP7 },
     { "pgp8",       oPGP8 },
-    { "de-vs",      oDE_VS }
+    { "de-vs",      oDE_VS },
+    { "fips",       oFIPS }
   };
 
 
@@ -2324,6 +2336,7 @@ set_compliance_option (enum cmd_and_opt_values option)
       opt.s2k_digest_algo = 0;
       opt.s2k_cipher_algo = DEFAULT_CIPHER_ALGO;
       opt.flags.allow_old_cipher_algos = 0;
+      opt.flags.allow_9980 = 0;
       break;
 
     case oOpenPGP:
@@ -2369,6 +2382,16 @@ set_compliance_option (enum cmd_and_opt_values option)
       /* We divert here from the backward compatible rfc4880 algos.  */
       opt.s2k_digest_algo = DIGEST_ALGO_SHA256;
       opt.s2k_cipher_algo = CIPHER_ALGO_AES256;
+      opt.flags.allow_9980 = 1;  /* Germany likes the NSA.  */
+      break;
+
+    case oFIPS:
+      set_compliance_option (oGnuPG);
+      opt.compliance = CO_FIPS;
+      /* We divert here from the backward compatible rfc4880 algos.  */
+      opt.s2k_digest_algo = DIGEST_ALGO_SHA256;
+      opt.s2k_cipher_algo = CIPHER_ALGO_AES256;
+      opt.flags.allow_9980 = 1;  /* Required to have GCM.  */
       break;
 
     default:
@@ -2912,6 +2935,8 @@ main (int argc, char **argv)
 
 	  case oDebugAll: opt.debug = ~0; break;
           case oDebugLevel: debug_level = pargs.r.ret_str; break;
+
+          case oDebugNoLibgcrypt: mopt.no_libgcrypt_debug = 1; break;
 
           case oDebugIOLBF: break; /* Already set in pre-parse step.  */
 
@@ -3587,6 +3612,7 @@ main (int argc, char **argv)
             }
             break;
           case oNoSigCache: opt.no_sig_cache = 1; break;
+          case oAllow9980:  opt.flags.allow_9980 = 1; break;
 	  case oAllowNonSelfsignedUID: opt.allow_non_selfsigned_uid = 1; break;
 	  case oNoAllowNonSelfsignedUID: opt.allow_non_selfsigned_uid=0; break;
 	  case oAllowFreeformUID: opt.allow_freeform_uid = 1; break;

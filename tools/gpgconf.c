@@ -1577,6 +1577,46 @@ show_versions_via_dirmngr (estream_t fp)
 }
 
 
+static void
+show_versioninfo_txt (estream_t fp)
+{
+  char *fname;
+  estream_t infp;
+
+  es_fputs ("* Versioninfo\n", fp);
+
+  fname = make_filename (gnupg_bindir (), "../../versioninfo.txt", NULL);
+  infp = es_fopen (fname, "r");
+  if (!infp)
+    {
+      xfree (fname);
+      fname = make_filename (gnupg_bindir (),
+                             "../../Gpg4win/versioninfo.txt", NULL);
+      infp = es_fopen (fname, "r");
+    }
+  if (!infp)
+    es_fprintf (fp, "[versioninfo.txt not found]\n");
+  else
+    {
+      char *line = NULL;
+      size_t line_len = 0;
+
+      es_fprintf (fp, "# Content of '%s':\n", fname);
+      while (es_read_line (infp, &line, &line_len, NULL) > 0)
+        {
+          /* Prefix each line with a colon and a space to mark it as
+           * source code. */
+          es_fputs (": ", fp);
+          es_fputs (line, fp);
+        }
+      es_fputs ("# End of versioninfo.txt\n", fp);
+      xfree (line);
+    }
+  es_fclose (fp);
+  xfree (fname);
+}
+
+
 /* Show all kind of version information.  */
 static void
 show_versions (estream_t fp)
@@ -1588,6 +1628,11 @@ show_versions (estream_t fp)
   show_version_gpgrt (fp);
   es_fputc ('\n', fp);
   show_versions_via_dirmngr (fp);
+  if (opt.verbose)
+    {
+      es_fputc ('\n', fp);
+      show_versioninfo_txt (fp);
+    }
 }
 
 

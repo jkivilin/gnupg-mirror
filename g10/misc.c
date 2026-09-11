@@ -641,6 +641,11 @@ openpgp_aead_test_algo (aead_algo_t algo)
     case AEAD_ALGO_NONE:
       break;
 
+    case AEAD_ALGO_GCM:
+      if (RFC9980)
+        return 0;
+      break;
+
     case AEAD_ALGO_EAX:
     case AEAD_ALGO_OCB:
       return 0;
@@ -661,6 +666,7 @@ openpgp_aead_algo_name (aead_algo_t algo)
     case AEAD_ALGO_NONE:  break;
     case AEAD_ALGO_EAX:   return gnupg_cipher_mode_name (GCRY_CIPHER_MODE_EAX);
     case AEAD_ALGO_OCB:   return gnupg_cipher_mode_name (GCRY_CIPHER_MODE_OCB);
+    case AEAD_ALGO_GCM:   return gnupg_cipher_mode_name (GCRY_CIPHER_MODE_GCM);
     }
 
   return "?";
@@ -686,6 +692,15 @@ openpgp_aead_algo_info (aead_algo_t algo, enum gcry_cipher_modes *r_mode,
       *r_mode = MY_GCRY_CIPHER_MODE_EAX;
       *r_noncelen = 16;
       break;
+
+    case AEAD_ALGO_GCM:
+      if (RFC9980)
+        {
+          *r_mode = GCRY_CIPHER_MODE_GCM;
+          *r_noncelen = 12;
+          break;
+        }
+      /* FALLTHRU */
 
     default:
       log_error ("unsupported AEAD algo %d\n", algo);
@@ -752,6 +767,26 @@ openpgp_pk_test_algo2 (pubkey_algo_t algo, unsigned int use)
 
     case PUBKEY_ALGO_KYBER:     ga = GCRY_PK_KEM; break;
 
+    case PUBKEY_ALGO_ED25519:
+      if (RFC9980)
+        ga = GCRY_PK_EDDSA;
+      break;
+
+    case PUBKEY_ALGO_X25519:
+      if (RFC9980)
+        ga = GCRY_PK_KEM;
+      break;
+
+    case PUBKEY_ALGO_MLK768_25519:
+    case PUBKEY_ALGO_MLK768_NP384:
+    case PUBKEY_ALGO_MLK768_BP384:
+    case PUBKEY_ALGO_MLK1024_448:
+    case PUBKEY_ALGO_MLK1024_NP521:
+    case PUBKEY_ALGO_MLK1024_BP512:
+      if (RFC9980)
+        ga = GCRY_PK_KEM;
+      break;
+
     default:
       break;
     }
@@ -802,14 +837,27 @@ openpgp_pk_algo_usage ( int algo )
       case PUBKEY_ALGO_EDDSA:
           use = PUBKEY_USAGE_CERT | PUBKEY_USAGE_SIG | PUBKEY_USAGE_AUTH;
           break;
+      case PUBKEY_ALGO_ED25519:
+        if (RFC9980)
+          use= PUBKEY_USAGE_CERT | PUBKEY_USAGE_SIG | PUBKEY_USAGE_AUTH;
+        break;
+      case PUBKEY_ALGO_X25519:
+        if (RFC9980)
+          use= PUBKEY_USAGE_ENC | PUBKEY_USAGE_RENC;
+        break;
 
       case PUBKEY_ALGO_KYBER:
+      case PUBKEY_ALGO_MLK768_25519:
+      case PUBKEY_ALGO_MLK768_NP384:
+      case PUBKEY_ALGO_MLK768_BP384:
+      case PUBKEY_ALGO_MLK1024_448:
+      case PUBKEY_ALGO_MLK1024_NP521:
+      case PUBKEY_ALGO_MLK1024_BP512:
           use = PUBKEY_USAGE_ENC | PUBKEY_USAGE_RENC;
           break;
 
-      case PUBKEY_ALGO_DIL3_25519:
-      case PUBKEY_ALGO_DIL5_448:
-      case PUBKEY_ALGO_SPHINX_SHA2:
+      case PUBKEY_ALGO_MLD65_25519:
+      case PUBKEY_ALGO_MLD87_448:
           use = PUBKEY_USAGE_CERT | PUBKEY_USAGE_SIG;
           break;
 
@@ -837,13 +885,21 @@ openpgp_pk_algo_name (pubkey_algo_t algo)
     case PUBKEY_ALGO_ECDSA:     return "ECDSA";
     case PUBKEY_ALGO_EDDSA:     return "EDDSA";
     case PUBKEY_ALGO_KYBER:     return "Kyber";
+    case PUBKEY_ALGO_X25519:    return "ietf25";
+    case PUBKEY_ALGO_ED25519:   return "ietf27";
+    case PUBKEY_ALGO_MLK768_25519: return "mlk768";
+    case PUBKEY_ALGO_MLK768_NP384: return "mlk768_np384";
+    case PUBKEY_ALGO_MLK768_BP384: return "mlk768_bp384";
+    case PUBKEY_ALGO_MLK1024_448:  return "mlk1024";
+    case PUBKEY_ALGO_MLK1024_NP521:return "mlk1024_np521";
+    case PUBKEY_ALGO_MLK1024_BP512:return "mlk1024_bp512";
     default: return "?";
     }
 }
 
 
 /* Explicit mapping of OpenPGP digest algos to Libgcrypt.  */
-/* FIXME: We do not yes use it everywhere.  */
+/* FIXME: We do not yet use it everywhere.  */
 enum gcry_md_algos
 map_md_openpgp_to_gcry (digest_algo_t algo)
 {
@@ -1450,6 +1506,10 @@ compliance_failure(void)
     case CO_DE_VS:
       ver="DE-VS applications";
       break;
+
+    case CO_FIPS:
+      ver="FIPS applications";
+      break;
     }
 
   log_info(_("this message may not be usable by %s\n"),ver);
@@ -1742,7 +1802,12 @@ pubkey_get_npkey (pubkey_algo_t algo)
     case PUBKEY_ALGO_ELGAMAL:   return 3;
     case PUBKEY_ALGO_EDDSA:     return 2;
     case PUBKEY_ALGO_KYBER:     return 3;
-    default: return 0;
+    case PUBKEY_ALGO_X25519:       return 1;
+    case PUBKEY_ALGO_ED25519:      return 1;
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algo))
+        return 2;
+      return 0;
     }
 }
 
@@ -1763,7 +1828,12 @@ pubkey_get_nskey (pubkey_algo_t algo)
     case PUBKEY_ALGO_ELGAMAL:   return 4;
     case PUBKEY_ALGO_EDDSA:     return 3;
     case PUBKEY_ALGO_KYBER:     return 5;
-    default: return 0;
+    case PUBKEY_ALGO_X25519:    return 2;
+    case PUBKEY_ALGO_ED25519:   return 2;
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algo))
+        return 4;
+      return 0;
     }
 }
 
@@ -1782,6 +1852,7 @@ pubkey_get_nsig (pubkey_algo_t algo)
     case PUBKEY_ALGO_ECDSA:     return 2;
     case PUBKEY_ALGO_ELGAMAL:   return 2;
     case PUBKEY_ALGO_EDDSA:     return 2;
+    case PUBKEY_ALGO_ED25519:   return 1;
     default: return 0;
     }
 }
@@ -1803,7 +1874,11 @@ pubkey_get_nenc (pubkey_algo_t algo)
     case PUBKEY_ALGO_ELGAMAL:   return 2;
     case PUBKEY_ALGO_EDDSA:     return 0;
     case PUBKEY_ALGO_KYBER:     return 3;
-    default: return 0;
+    case PUBKEY_ALGO_X25519:    return 2;
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algo))
+        return 3;
+      return 0;
     }
 }
 

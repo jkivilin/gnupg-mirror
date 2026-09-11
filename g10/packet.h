@@ -157,7 +157,7 @@ typedef struct {
 typedef struct {
   /* The 64-bit keyid.  */
   u32     keyid[2];
-  /* The packet's version.  Currently, only version 3 is defined.  */
+  /* The packet's version.  This may be 3 or 6.  */
   byte    version;
   /* The algorithm used for the public key encryption scheme.  */
   byte    pubkey_algo;
@@ -166,6 +166,10 @@ typedef struct {
   /* Whether to hide the key id.  This value is not directly
      serialized.  */
   byte    throw_keyid;
+  /* Fingerprint of the key and the used length (i.e. the extended
+   * keyid).  Note that this is only used for version 6 packets.  */
+  byte fprlen;
+  byte fpr[MAX_FINGERPRINT_LEN];
   /* The encrypted session key.  */
   gcry_mpi_t     data[PUBKEY_MAX_NENC];
 } PKT_pubkey_enc;
@@ -200,20 +204,22 @@ struct pubkey_enc_info_item
 /* A one-pass signature packet as defined in RFC 4880, Section
    5.4.  All fields are serialized.  */
 typedef struct {
-    u32     keyid[2];	    /* The 64-bit keyid */
-    /* The signature's classification (RFC 4880, Section 5.2.1).  */
-    byte    sig_class;
-    byte    digest_algo;    /* algorithm used for digest */
-    byte    pubkey_algo;    /* algorithm used for public key scheme */
-    /* A message can be signed by multiple keys.  In this case, there
-       are n one-pass signature packets before the message to sign and
-       n signatures packets after the message.  It is conceivable that
-       someone wants to not only sign the message, but all of the
-       signatures.  Now we need to distinguish between signing the
-       message and signing the message plus the surrounding
-       signatures.  This is the point of this flag.  If set, it means:
-       I sign all of the data starting at the next packet.  */
-    byte    last;
+  u32     keyid[2];	    /* The 64-bit keyid */
+  /* The signature's classification (RFC 4880, Section 5.2.1).  */
+  byte    sig_class;
+  byte    digest_algo;    /* algorithm used for digest */
+  byte    pubkey_algo;    /* algorithm used for public key scheme */
+  /* A message can be signed by multiple keys.  In this case, there
+   * are n one-pass signature packets before the message to sign and n
+   * signatures packets after the message.  It is conceivable that
+   * someone wants to not only sign the message, but all of the
+   * signatures.  Now we need to distinguish between signing the
+   * message and signing the message plus the surrounding signatures.
+   * This is the point of this flag.  If set, it means: I sign all of
+   * the data starting at the next packet.  */
+  byte    last;
+  byte    version;            /* The version of the packet.  */
+  gcry_mpi_t salt;            /* The v6 sigature salt.    */
 } PKT_onepass_sig;
 
 
@@ -303,6 +309,7 @@ typedef struct
                               * already been sanitized.  */
   subpktarea_t *hashed;      /* All subpackets with hashed data (v4, v5 only). */
   subpktarea_t *unhashed;    /* Ditto for unhashed data. */
+  gcry_mpi_t salt;            /* The v6 sigature salt.    */
   /* First 2 bytes of the digest.  (Serialized.  Note: this is not
      automatically filled in when serializing a signature!)  */
   byte digest_start[2];
@@ -465,6 +472,7 @@ typedef struct
   /* Fingerprint of the key.  Only valid if FPRLEN is not 0.  */
   byte    fpr[MAX_FINGERPRINT_LEN];
   prefitem_t *prefs;      /* list of preferences (may be NULL) */
+  prefitem_t *dks_prefs;  /* direct key signature prefs (may be NULL) */
   struct
   {
     unsigned int mdc:1;           /* MDC feature set.  */
@@ -554,6 +562,12 @@ typedef struct {
      was encoded using partial body length headers (new format).
      Note: this is ignored when encrypting.  */
   byte is_partial;
+  /* This flag is only set if this is a SEIPD packet (tag 18).  It is
+   * neither set for a SED packet (tag 9) or a OCB Encrypted Data
+   * packet (tag 20).  */
+  byte seipd;
+  /* The version of the packet.  */
+  byte version;
   /* If 0, MDC is disabled.  Otherwise, the MDC method that was used
      (only DIGEST_ALGO_SHA1 has ever been defined).  */
   byte mdc_method;
@@ -994,7 +1008,8 @@ gpg_error_t check_signature (ctrl_t ctrl,
 
 
 /*-- pubkey-enc.c --*/
-gpg_error_t get_session_key (ctrl_t ctrl, struct seskey_enc_list *k, DEK *dek);
+gpg_error_t get_session_key (ctrl_t ctrl, struct seskey_enc_list *k, DEK *dek,
+                             int seipdv2_cipher_algo);
 gpg_error_t get_override_session_key (DEK *dek, const char *string);
 
 /*-- compress.c --*/

@@ -144,12 +144,13 @@ compute_kmac256 (void *digest, size_t digestlen,
 }
 
 
-/* Compute KEK for ECC with HASHALGO, ECDH result, and KDF_PARAMS.
+/* Compute KEK for ECC with KDF_ALGO, HASHALGO, ECDH result, and
+ * KDF_PARAMS.
  *
  * KDF_PARAMS is specified by upper layer.
  */
 gpg_error_t
-gnupg_ecc_kem_kdf (void *kek, size_t kek_len, int is_pgp,
+gnupg_ecc_kem_kdf (void *kek, size_t kek_len, int kdf_algo,
                    int hashalgo, const void *ecdh, size_t ecdh_len,
                    const unsigned char *kdf_params, size_t kdf_params_len)
 {
@@ -157,12 +158,6 @@ gnupg_ecc_kem_kdf (void *kek, size_t kek_len, int is_pgp,
   gpg_error_t err;
   gcry_kdf_hd_t hd;
   unsigned long param[1];
-  int kdf_algo;
-
-  if (is_pgp)
-    kdf_algo = GCRY_KDF_ONESTEP_KDF;
-  else
-    kdf_algo = GCRY_KDF_X963_KDF;
 
   param[0] = kek_len;
   err = gcry_kdf_open (&hd, kdf_algo, hashalgo, param, 1,
@@ -209,6 +204,7 @@ gnupg_ecc_kem_simple_kdf (void *kek, size_t kek_len,
   return 0;
 }
 
+
 /* Compute KEK by combining two KEMs.  The caller provides a buffer
  * KEK allocated with size KEK_LEN which will receive the computed
  * KEK. (ECC_SS, ECC_SS_LEN) is the shared secret of the first key.
@@ -217,8 +213,7 @@ gnupg_ecc_kem_simple_kdf (void *kek, size_t kek_len,
  * (MLKEM_CT, MLKEM_CT_LEN) is the ciphertext of the second key.
  * (FIXEDINFO, FIXEDINFO_LEN) is an octet string used to bind the KEK
  * to a the key; for PGP we use the concatenation of the session key's
- * algorithm id and the v5 fingerprint of the key.
- */
+ * algorithm id and the v5 fingerprint of the key.  */
 gpg_error_t
 gnupg_kem_combiner (void *kek, size_t kek_len,
                     const void *ecc_ss, size_t ecc_ss_len,
@@ -255,7 +250,53 @@ gnupg_kem_combiner (void *kek, size_t kek_len,
                          KMAC_CUSTOM, strlen (KMAC_CUSTOM), iov, 6);
   return err;
 }
+
+
+/* Compute KEK by combining two KEMs; this ise the RFC9980 version
+ * using SHA3-256.  The caller provides a buffer KEK allocated with
+ * size KEK_LEN which will receive the computed
+ * KEK. (ECC_SS,ECC_SS_LEN) is the shared secret of the first key.
+ * (ECC_CT,ECC_CT_LEN) is the ciphertext of the first key.
+ * (ECC_PK,ECC_PK_LEN) is the public key of the first key.
+ * (MLKEM_SS,ECC_SS_LEN) is the shared secret of the second key.
+ * (FIXEDINFO, FIXEDINFO_LEN) is an octet string used to bind the KEK
+ * to a the key.  */
+gpg_error_t
+gnupg_kem_combiner_sha3_256 (void *kek, size_t kek_len,
+                             const void *ecc_ss, size_t ecc_ss_len,
+                             const void *ecc_ct, size_t ecc_ct_len,
+                             const void *ecc_pk, size_t ecc_pk_len,
+                             const void *mlkem_ss, size_t mlkem_ss_len,
+                             const void *fixedinfo, size_t fixedinfo_len)
+{
+  gpg_error_t err;
+  gcry_buffer_t iov[5];
+
+  memset (iov, 0, sizeof (iov));
+
+  iov[0].data = (unsigned char *)mlkem_ss;
+  iov[0].len = mlkem_ss_len;
+
+  iov[1].data = (unsigned char *)ecc_ss;
+  iov[1].len = ecc_ss_len;
+
+  iov[2].data = (unsigned char *)ecc_ct;
+  iov[2].len = ecc_ct_len;
+
+  iov[3].data = (unsigned char *)ecc_pk;
+  iov[3].len = ecc_pk_len;
+
+  iov[4].data = (unsigned char *)fixedinfo;
+  iov[4].len = fixedinfo_len;
+
+  err = gcry_md_hash_buffers_ext (GCRY_MD_SHA3_256, 0,
+                                  kek, kek_len, iov, 5);
+  return err;
+}
+
+
 
+
 #define ECC_CURVE25519_INDEX 0
 static const struct gnupg_ecc_params ecc_table[] =
   {
@@ -264,6 +305,12 @@ static const struct gnupg_ecc_params ecc_table[] =
       33, 32, 32,
       GCRY_MD_SHA3_256, GCRY_KEM_RAW_X25519,
       1, 1, 0
+    },
+    {
+      "ietf25",
+      32, 32, 32,
+      GCRY_MD_SHA3_256, GCRY_KEM_RAW_X25519,
+      0, 0, 0
     },
     {
       "X448",

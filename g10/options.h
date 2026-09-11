@@ -284,6 +284,7 @@ struct
     unsigned int allow_old_cipher_algos:1;
     unsigned int allow_weak_digest_algos:1;
     unsigned int allow_weak_key_signatures:1;
+    unsigned int allow_9980:1;  /* Use the RFC9980 macro in conditions.  */
     unsigned int large_rsa:1;
     unsigned int disable_signer_uid:1;
     unsigned int include_key_block:1;
@@ -415,12 +416,14 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
 
 
 /* Compliance test macros.  */
-#define GNUPG   (opt.compliance==CO_GNUPG || opt.compliance==CO_DE_VS)
+#define GNUPG   (opt.compliance==CO_GNUPG || opt.compliance==CO_DE_VS \
+                 || opt.compliance==CO_FIPS)
 #define RFC2440 (opt.compliance==CO_RFC2440)
 #define RFC4880 (opt.compliance==CO_RFC4880)
 #define PGP7    (opt.compliance==CO_PGP7)
 #define PGP8    (opt.compliance==CO_PGP8)
 #define PGPX    (PGP7 || PGP8)
+#define RFC9980 (opt.flags.allow_9980)
 
 /* Various option flags.  Note that there should be no common string
    names between the IMPORT_ and EXPORT_ flags as they can be mixed in
@@ -445,6 +448,7 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
 #define IMPORT_BULK                      (1<<17)
 #define IMPORT_IGNORE_ATTRIBUTES         (1<<18)
 #define IMPORT_FORCE_UPDATE              (1<<19)
+#define IMPORT_DEBUG_ACCEPT_NO_UID       (1<<20)
 
 #define EXPORT_LOCAL_SIGS                (1<<0)
 #define EXPORT_ATTRIBUTES                (1<<1)
@@ -483,6 +487,7 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
 #define LIST_SHOW_OWNERTRUST             (1<<19)
 #define LIST_SHOW_TRUSTSIG               (1<<20)
 #define LIST_SHOW_HIDDEN_NOTATIONS       (1<<21)
+#define LIST_DEBUG_SHOW_SEXP             (1<<22)  /*Only for parse-packet*/
 
 #define VERIFY_SHOW_PHOTOS               (1<<0)
 #define VERIFY_SHOW_POLICY_URLS          (1<<1)

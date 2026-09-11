@@ -89,6 +89,8 @@ copy_pubkey_enc_parts (PKT_pubkey_enc *dst, PKT_pubkey_enc *src)
   dst->pubkey_algo = src->pubkey_algo;
   dst->seskey_algo = src->seskey_algo;
   dst->throw_keyid = src->throw_keyid;
+  dst->fprlen      = src->fprlen;
+  memcpy (dst->fpr, src->fpr, sizeof src->fpr);
 
   if (!(n = pubkey_get_nenc (dst->pubkey_algo)))
     n = 1;  /* All data is in the first item as an opaque MPI. */
@@ -96,6 +98,17 @@ copy_pubkey_enc_parts (PKT_pubkey_enc *dst, PKT_pubkey_enc *src)
     dst->data[i] = my_mpi_copy (src->data[i]);
   for (; i < PUBKEY_MAX_NENC; i++)
     dst->data[i] = NULL;
+}
+
+
+static void
+free_onepass_sig (PKT_onepass_sig *ops)
+{
+  if (ops)
+    {
+      mpi_release (ops->salt);
+      xfree (ops);
+    }
 }
 
 
@@ -113,6 +126,7 @@ free_seckey_enc( PKT_signature *sig )
   xfree(sig->revkey);
   xfree(sig->hashed);
   xfree(sig->unhashed);
+  mpi_release (sig->salt);
 
   /* Do not forget to update copy_signature() too. */
   xfree(sig->rev_subject_info);
@@ -147,6 +161,11 @@ release_public_key_parts (PKT_public_key *pk)
     {
       xfree (pk->prefs);
       pk->prefs = NULL;
+    }
+  if (pk->dks_prefs)
+    {
+      xfree (pk->dks_prefs);
+      pk->dks_prefs = NULL;
     }
   free_user_id (pk->user_id);
   pk->user_id = NULL;
@@ -241,6 +260,7 @@ copy_public_key_basics (PKT_public_key *d, PKT_public_key *s)
   d->seckey_info = NULL;
   d->user_id = NULL;
   d->prefs = NULL;
+  d->dks_prefs = NULL;
   d->revoked.got_reason = 0;
   d->revoked.reason_code = 0;
   d->revoked.reason_comment = NULL;
@@ -275,6 +295,7 @@ copy_public_key (PKT_public_key *d, PKT_public_key *s)
   d = copy_public_key_basics (d, s);
   d->user_id = scopy_user_id (s->user_id);
   d->prefs = copy_prefs (s->prefs);
+  d->dks_prefs = copy_prefs (s->dks_prefs);
 
   if (!s->revkey && s->numrevkeys)
     BUG();
@@ -326,6 +347,7 @@ copy_signature( PKT_signature *d, PKT_signature *s )
     }
     d->hashed = cp_subpktarea (s->hashed);
     d->unhashed = cp_subpktarea (s->unhashed);
+    d->salt = s->salt? my_mpi_copy (s->salt) : NULL;
     if (s->signers_uid)
       d->signers_uid = xstrdup (s->signers_uid);
     else
@@ -520,6 +542,9 @@ free_packet (PACKET *pkt, parse_packet_ctx_t parsectx)
     case PKT_SIGNATURE:
       free_seckey_enc (pkt->pkt.signature);
       break;
+    case PKT_ONEPASS_SIG:
+      free_onepass_sig (pkt->pkt.onepass_sig);
+      break;
     case PKT_PUBKEY_ENC:
       free_pubkey_enc (pkt->pkt.pubkey_enc);
       break;
@@ -543,7 +568,7 @@ free_packet (PACKET *pkt, parse_packet_ctx_t parsectx)
       break;
     case PKT_ENCRYPTED:
     case PKT_ENCRYPTED_MDC:
-    case PKT_ENCRYPTED_AEAD:
+    case PKT_ENCRYPTED_OCB:
       free_encrypted (pkt->pkt.encrypted);
       break;
     case PKT_PLAINTEXT:

@@ -233,6 +233,13 @@ keygrip_from_keyparm (int algo, struct keyparm_s *kp, unsigned char *grip)
       }
       break;
 
+    case PUBKEY_ALGO_ED25519:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve Ed25519)"
+                             "(flags eddsa)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
     case PUBKEY_ALGO_KYBER:
       /* There is no space in the BLOB for a second grip, thus for now
        * we store only the ECC keygrip.  */
@@ -251,6 +258,50 @@ keygrip_from_keyparm (int algo, struct keyparm_s *kp, unsigned char *grip)
             xfree (curve);
           }
       }
+      break;
+
+    case PUBKEY_ALGO_X25519:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve ietf25)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK768_25519:
+      /* There is no space in the BLOB for the a second grip of a
+       * composite algo, thus for now we store only the ECC keygrip.  */
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve ietf25)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK768_NP384:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve nistp384)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK768_BP384:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve bp384)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK1024_448:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve X448)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK1024_NP521:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve nistp521)(q%b)))",
+                             kp[0].len, kp[0].mpi);
+      break;
+
+    case PUBKEY_ALGO_MLK1024_BP512:
+      err = gcry_sexp_build (&s_pkey, NULL,
+                             "(public-key(ecc(curve bp512)(q%b)))",
+                             kp[0].len, kp[0].mpi);
       break;
 
     default:
@@ -294,6 +345,7 @@ parse_key (const unsigned char *data, size_t datalen,
   gcry_md_hd_t md;
   int is_ecc = 0;
   int is_kyber = 0;
+  int is_9980 = 0;  /* Algorithm version from 9980 et al. */
   int is_v5;
   /* unsigned int pkbytes;  for v5: # of octets of the public key params.  */
   struct keyparm_s keyparm[OPENPGP_MAX_NPKEY];
@@ -302,9 +354,9 @@ parse_key (const unsigned char *data, size_t datalen,
   if (datalen < 5)
     return gpg_error (GPG_ERR_INV_PACKET);
   version = *data++; datalen--;
-  if (version < 2 || version > 5 )
+  if (version < 2 || version > 6)
     return gpg_error (GPG_ERR_INV_PACKET); /* Invalid version. */
-  is_v5 = version == 5;
+  is_v5 = (version >= 5);
 
   /*timestamp = ((data[0]<<24)|(data[1]<<16)|(data[2]<<8)|(data[3]));*/
   data +=4; datalen -=4;
@@ -352,11 +404,26 @@ parse_key (const unsigned char *data, size_t datalen,
       npkey = 2;
       is_ecc = 1;
       break;
+    case PUBKEY_ALGO_X25519:
+      npkey = 1;
+      is_9980 = 1;
+      break;
+    case PUBKEY_ALGO_ED25519:
+      npkey = 1;
+      is_9980 = 1;
+      break;
     case PUBKEY_ALGO_KYBER:
       npkey = 3;
       is_kyber = 1;
       break;
-    default: /* Unknown algorithm. */
+    default:
+      if (IS_PUBKEY_ALGO_MLK (algorithm))
+        {
+          npkey = 2;
+          is_9980 = 1;
+          break;
+        }
+      /* Unknown algorithm. */
       return gpg_error (GPG_ERR_UNKNOWN_ALGORITHM);
     }
 
@@ -397,6 +464,30 @@ parse_key (const unsigned char *data, size_t datalen,
           keyparm[i].mpi = data;
           keyparm[i].len = nbytes;
         }
+      else if (is_9980)
+        {
+          if (algorithm == PUBKEY_ALGO_ED25519)
+            nbytes = 32;
+          else if (algorithm == PUBKEY_ALGO_X25519)
+            nbytes = 32;
+          else if (algorithm == PUBKEY_ALGO_MLK768_25519)
+            nbytes = !i? 32 : 1184;
+          else if (algorithm == PUBKEY_ALGO_MLK768_NP384
+                   || algorithm == PUBKEY_ALGO_MLK768_BP384)
+            nbytes = !i? 97 : 1184;
+          else if (algorithm == PUBKEY_ALGO_MLK1024_448)
+            nbytes = !i? 56 : 1568;
+          else if (algorithm == PUBKEY_ALGO_MLK1024_NP521)
+            nbytes = !i? 133 : 1568;
+          else if (algorithm == PUBKEY_ALGO_MLK1024_BP512)
+            nbytes = !i? 129 : 1568;
+          else
+            BUG ();
+          if (datalen < nbytes)
+            return gpg_error (GPG_ERR_INV_PACKET);
+          keyparm[i].mpi = data;
+          keyparm[i].len = nbytes;
+        }
       else
         {
           nbits = ((data[0]<<8)|(data[1]));
@@ -414,11 +505,10 @@ parse_key (const unsigned char *data, size_t datalen,
     }
   n = data - data_start;
 
-
   /* Note: Starting here we need to jump to leave on error. */
 
   /* For non-ECC, make sure the MPIs are unsigned.  */
-  if (!is_ecc && !is_kyber)
+  if (!is_ecc && !is_kyber && !is_9980)
     for (i=0; i < npkey; i++)
       {
         if (!keyparm[i].len || (keyparm[i].mpi[0] & 0x80))
@@ -476,11 +566,11 @@ parse_key (const unsigned char *data, size_t datalen,
          large enough.
          FIXME: Factor this out to a shared fingerprint function.
        */
-      if (version == 5)
+      if (version >= 5)
         {
           if (5 + n < sizeof hashbuffer )
             {
-              hashbuffer[0] = 0x9a;     /* CTB */
+              hashbuffer[0] = version==6? 0x9b : 0x9a;    /* CTB */
               hashbuffer[1] = (n >> 24);/* 4 byte length header. */
               hashbuffer[2] = (n >> 16);
               hashbuffer[3] = (n >>  8);
@@ -493,7 +583,7 @@ parse_key (const unsigned char *data, size_t datalen,
               err = gcry_md_open (&md, GCRY_MD_SHA256, 0);
               if (err)
                 return err; /* Oops */
-              gcry_md_putc (md, 0x9a );     /* CTB */
+              gcry_md_putc (md, version==6? 0x9b : 0x9a );    /* CTB */
               gcry_md_putc (md, (n >> 24)); /* 4 byte length header. */
               gcry_md_putc (md, (n >> 16));
               gcry_md_putc (md, (n >>  8));

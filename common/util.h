@@ -320,7 +320,7 @@ gpgsm_ecc_kem_kdf (void *kek, size_t kek_len,
                    const unsigned char *wrap, size_t wrap_len,
                    const unsigned char *ukm, size_t ukm_len);
 
-gpg_error_t gnupg_ecc_kem_kdf (void *kek, size_t kek_len, int is_pgp,
+gpg_error_t gnupg_ecc_kem_kdf (void *kek, size_t kek_len, int kdf_algo,
                                int hashalgo, const void *ecdh, size_t ecdh_len,
                                const unsigned char *kdf_params,
                                size_t kdf_params_len);
@@ -336,6 +336,13 @@ gpg_error_t gnupg_kem_combiner  (void *kek, size_t kek_len,
                                  const void *mlkem_ss, size_t mlkem_ss_len,
                                  const void *mlkem_ct, size_t mlkem_ct_len,
                                  const void *fixedinfo, size_t fixedinfo_len);
+
+gpg_error_t gnupg_kem_combiner_sha3_256 (void *kek, size_t kek_len,
+                             const void *ecc_ss, size_t ecc_ss_len,
+                             const void *ecc_ct, size_t ecc_ct_len,
+                             const void *ecc_pk, size_t ecc_pk_len,
+                             const void *mlkem_ss, size_t mlkem_ss_len,
+                              const void *fixedinfo, size_t fixedinfo_len);
 
 /* ECC parameters for KEM encryption/decryption.  */
 struct gnupg_ecc_params

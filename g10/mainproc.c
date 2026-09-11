@@ -581,13 +581,17 @@ proc_encrypted (CTX c, PACKET *pkt)
   unsigned int compliance_de_vs = 0;
   enum gcry_cipher_modes ciphermode;
   int unknown_ciphermode;
+  int seipdv2_cipher_algo = 0;
 
   if (pkt)
     {
-      if (pkt->pkttype == PKT_ENCRYPTED_AEAD)
+      if (pkt->pkttype == PKT_ENCRYPTED_OCB)
         c->seen_pkt_encrypted_aead = 1;
       if (pkt->pkttype == PKT_ENCRYPTED_MDC)
-        c->seen_pkt_encrypted_mdc = 1;
+        {
+          c->seen_pkt_encrypted_mdc = 1;
+          seipdv2_cipher_algo = pkt->pkt.encrypted->cipher_algo;
+        }
     }
   else /* No PKT indicates the add-recipients mode.  */
     log_assert (c->ctrl->modify_recipients);
@@ -627,7 +631,8 @@ proc_encrypted (CTX c, PACKET *pkt)
   else if (c->sesenc_list)
     {
       c->dek = xmalloc_secure_clear (sizeof *c->dek);
-      result = get_session_key (c->ctrl, c->sesenc_list, c->dek);
+      result = get_session_key (c->ctrl, c->sesenc_list, c->dek,
+                                seipdv2_cipher_algo);
       if (is_status_enabled ())
         {
           struct seskey_enc_list *list;
@@ -953,6 +958,7 @@ proc_encrypted (CTX c, PACKET *pkt)
 
   /* The --require-compliance option allows one to simplify decryption in
    * de-vs compliance mode by just looking at the exit status.  */
+  /* FIXME:CO_FIPS */
   if (opt.flags.require_compliance
       && opt.compliance == CO_DE_VS
       && compliance_de_vs != (4|2|1)
@@ -1020,14 +1026,25 @@ proc_plaintext( CTX c, PACKET *pkt )
     {
       if (n->pkt->pkttype == PKT_ONEPASS_SIG)
         {
+          PKT_onepass_sig *ops = n->pkt->pkt.onepass_sig;
+          const void *salt;
+          unsigned int saltlen;
+
           /* The onepass signature case. */
-          if (n->pkt->pkt.onepass_sig->digest_algo)
+          if (ops->digest_algo)
             {
               if (!opt.skip_verify)
-                gcry_md_enable (c->mfx.md,
-                                n->pkt->pkt.onepass_sig->digest_algo);
+                gcry_md_enable (c->mfx.md, ops->digest_algo);
 
               any = 1;
+
+              /* Double-Urgs: To properly support that salt thingy we
+               * would have to have a hash context for each signature.  */
+              if (ops->version == 6 && ops->salt
+                  && gcry_mpi_get_flag (ops->salt, GCRYMPI_FLAG_OPAQUE)
+                  && (salt = gcry_mpi_get_opaque (ops->salt, &saltlen))
+                  && saltlen)
+                gcry_md_write (c->mfx.md, salt, (saltlen+7)/8);
             }
         }
       else if (n->pkt->pkttype == PKT_GPG_CONTROL
@@ -1749,7 +1766,7 @@ do_proc_packets (CTX c, iobuf_t a, int keep_dek_and_list)
             case PKT_SYMKEY_ENC:    proc_symkey_enc (c, pkt); break;
             case PKT_ENCRYPTED:
             case PKT_ENCRYPTED_MDC:
-            case PKT_ENCRYPTED_AEAD:proc_encrypted (c, pkt); break;
+            case PKT_ENCRYPTED_OCB: proc_encrypted (c, pkt); break;
             case PKT_COMPRESSED:    rc = proc_compressed (c, pkt); break;
             default: newpkt = 0; break;
 	    }
@@ -1765,7 +1782,7 @@ do_proc_packets (CTX c, iobuf_t a, int keep_dek_and_list)
             case PKT_PUBKEY_ENC:
             case PKT_ENCRYPTED:
             case PKT_ENCRYPTED_MDC:
-            case PKT_ENCRYPTED_AEAD:
+            case PKT_ENCRYPTED_OCB:
               write_status_text( STATUS_UNEXPECTED, "0" );
               rc = GPG_ERR_UNEXPECTED;
               goto leave;
@@ -1805,7 +1822,7 @@ do_proc_packets (CTX c, iobuf_t a, int keep_dek_and_list)
 
             case PKT_ENCRYPTED:
             case PKT_ENCRYPTED_MDC:
-            case PKT_ENCRYPTED_AEAD: proc_encrypted (c, pkt); break;
+            case PKT_ENCRYPTED_OCB: proc_encrypted (c, pkt); break;
             case PKT_PLAINTEXT:   proc_plaintext (c, pkt); break;
             case PKT_COMPRESSED:  rc = proc_compressed (c, pkt); break;
             case PKT_ONEPASS_SIG: newpkt = add_onepass_sig (c, pkt); break;
@@ -1833,7 +1850,7 @@ do_proc_packets (CTX c, iobuf_t a, int keep_dek_and_list)
             case PKT_SYMKEY_ENC:  proc_symkey_enc (c, pkt); break;
             case PKT_ENCRYPTED:
             case PKT_ENCRYPTED_MDC:
-            case PKT_ENCRYPTED_AEAD: proc_encrypted (c, pkt); break;
+            case PKT_ENCRYPTED_OCB: proc_encrypted (c, pkt); break;
             case PKT_PLAINTEXT:   proc_plaintext (c, pkt); break;
             case PKT_COMPRESSED:  rc = proc_compressed (c, pkt); break;
             case PKT_ONEPASS_SIG: newpkt = add_onepass_sig (c, pkt); break;
@@ -2543,6 +2560,20 @@ check_sig_and_print (CTX c, kbnode_t node)
           print_matching_notations (sig);
         }
 
+      /* Print a note if a signature salt was used despite of a
+       * non-vulnerable hash algo.  */
+      if (sig && sig->salt && !(sig->digest_algo == DIGEST_ALGO_SHA1
+                                || sig->digest_algo == DIGEST_ALGO_RMD160
+                                || sig->digest_algo == DIGEST_ALGO_MD5))
+        {
+          unsigned int saltlen;
+
+          if (opt.verbose
+              && gcry_mpi_get_flag (sig->salt, GCRYMPI_FLAG_OPAQUE)
+              && gcry_mpi_get_opaque (sig->salt, &saltlen) && saltlen)
+            log_info ("Note: signature has a deliberate covert channel\n");
+        }
+
       /* Fill PKSTRBUF with the algostring in case we later need it.  */
       if (pk)
         pubkey_string (pk, pkstrbuf, sizeof pkstrbuf);
@@ -2663,7 +2694,7 @@ check_sig_and_print (CTX c, kbnode_t node)
                               gnupg_status_compliance_flag (CO_DE_VS),
                               NULL);
       else if (opt.flags.require_compliance
-               && opt.compliance == CO_DE_VS)
+               && (opt.compliance == CO_DE_VS||opt.compliance == CO_FIPS))
         {
           log_error (_("operation forced to fail due to"
                        " unfulfilled compliance rules\n"));
@@ -2743,7 +2774,10 @@ proc_tree (CTX c, kbnode_t node)
       /* Check all signatures.  */
       if (!c->any.data)
         {
+          PKT_onepass_sig *ops = node->pkt->pkt.onepass_sig;
           int use_textmode = 0;
+          const void *salt;
+          unsigned int saltlen;
 
           free_md_filter_context (&c->mfx);
           /* Prepare to create all requested message digests.  */
@@ -2758,6 +2792,13 @@ proc_tree (CTX c, kbnode_t node)
 
           if (n1 && n1->pkt->pkt.onepass_sig->sig_class == 0x01)
             use_textmode = 1;
+
+          /* Double-Urgs: To properly support that salt thingy we
+           * would have to have a hash context for each signature.  */
+          if (ops->version == 6 && ops->salt
+              && gcry_mpi_get_flag (ops->salt, GCRYMPI_FLAG_OPAQUE)
+              && (salt = gcry_mpi_get_opaque (ops->salt, &saltlen)) && saltlen)
+            gcry_md_write (c->mfx.md, salt, (saltlen+7)/8);
 
           /* Ask for file and hash it. */
           if (c->sigs_only)

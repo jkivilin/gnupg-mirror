@@ -57,6 +57,8 @@ XTESTS = \
 	encrypt.scm \
 	encrypt-multifile.scm \
 	encrypt-dsa.scm \
+	encrypt-kyber.scm \
+	encrypt-mlk.scm \
 	compression.scm \
 	seat.scm \
 	clearsig.scm \
@@ -229,7 +231,17 @@ priv_keys = privkeys/50B2D4FA4122C212611048BC5FC31BD44393626E.asc \
 	    privkeys/A1ABFD89944870D04039D40C218EE127254AEEE9.key \
 	    privkeys/A87B85D88DB8B2B5A62A9958C8F2878F49605D09.key \
 	    privkeys/D54E9B75C3541D95C45E430DAC9645E9FB62C668.key \
-	    privkeys/EAD718DCE3D2F33A20BFC8BA617844DEF3FFAF3A.key
+	    privkeys/EAD718DCE3D2F33A20BFC8BA617844DEF3FFAF3A.key \
+            privkeys/F27FC04CB01723A4CB6F5399F7B86CCD82C0169C.key \
+            privkeys/7FF53317DEDAC5BB0299C0A754D106F0621C8257.key \
+            privkeys/4046964D48529FC7DE554542F4A658591BE27AF2.key \
+            privkeys/138E37A9418DA4C544BDDCDD11432C01ECEEAED4.key \
+            privkeys/8D69D5C7F91781175A899B1453CEF28BAD533991.key \
+            privkeys/59BE88218A145F87826ABBD49817ED8F26E7DA50.key \
+            privkeys/5F7A0A9BB0B5519F4E2BB2A91B742AE218886888.key \
+            privkeys/4C726A3962D6114D5066551A4143FF3A0414394D.key \
+            privkeys/2E99977AF7BF5029064E39A12FA866A1A79F89C4.key \
+            privkeys/AD0EF479060A5B9DC2B0AD14168770867DE53EB0.key
 
 
 sample_keys = samplekeys/README \
@@ -262,7 +274,10 @@ sample_keys = samplekeys/README \
               samplekeys/pqc-sample-2.key.asc \
               samplekeys/pqc-sample-3.key.asc \
               samplekeys/pqc-sample-4.key.asc \
-              samplekeys/pqc-sample-5.key.asc
+              samplekeys/pqc-sample-5.key.asc \
+              samplekeys/ietf27-mlk768-v4-pub.asc \
+              samplekeys/ietf27-mlk768-v6-pub.asc \
+              samplekeys/ietf27-mlk-nistbrain-pub.asc
 
 sample_msgs = samplemsgs/clearsig-1-key-1.asc \
 	      samplemsgs/clearsig-2-keys-1.asc \
@@ -300,7 +315,11 @@ sample_msgs = samplemsgs/clearsig-1-key-1.asc \
               samplemsgs/pqc-sample-2.enc.asc \
               samplemsgs/pqc-sample-3.enc.asc \
               samplemsgs/pqc-sample-4.enc.asc \
-              samplemsgs/pqc-sample-5.enc.asc
+              samplemsgs/pqc-sample-5.enc.asc \
+              samplemsgs/pqc-mlk1024_np521.enc.asc \
+              samplemsgs/pqc-mlk768_np384.enc.asc \
+              samplemsgs/pqc-mlk1024_bp512.enc.asc \
+              samplemsgs/pqc-mlk768_bp384.enc.asc
 
 EXTRA_DIST = defs.scm trust-pgp/common.scm $(XTESTS) $(TEST_FILES) \
 	     mkdemodirs signdemokey $(priv_keys) $(sample_keys)   \

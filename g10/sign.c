@@ -101,7 +101,8 @@ mk_notation_policy_etc (ctrl_t ctrl, PKT_signature *sig,
     {
       ndmanu = name_value_to_notation
         ("manu",
-         gnupg_manu_notation_value (with_manu == 23? CO_DE_VS : CO_GNUPG));
+         gnupg_manu_notation_value (with_manu == 23? CO_DE_VS :
+                                    with_manu == 140? CO_FIPS : CO_GNUPG));
       ndmanu->next = nd;
       nd = ndmanu;
     }
@@ -356,6 +357,11 @@ hash_sigversion_to_magic (gcry_md_hd_t md, const PKT_signature *sig,
   if (sig->hashed)
     {
       n = sig->hashed->len;
+      if (sig->version >= 6)
+        {
+          gcry_md_putc (md, (n >> 24) );
+          gcry_md_putc (md, (n >> 16) );
+        }
       gcry_md_putc (md, (n >> 8) );
       gcry_md_putc (md,  n       );
       gcry_md_write (md, sig->hashed->data, n );
@@ -363,10 +369,18 @@ hash_sigversion_to_magic (gcry_md_hd_t md, const PKT_signature *sig,
     }
   else
     {
+      if (sig->version >= 6)
+        {
+          gcry_md_putc (md, 0);
+          gcry_md_putc (md, 0);
+        }
       gcry_md_putc (md, 0);  /* Always hash the length of the subpacket.  */
       gcry_md_putc (md, 0);
       n = 6;
     }
+  if (sig->version >= 6)
+    n += 2; /* Fixup for the two extra octets hashed.  */
+
   /* Hash data from the literal data packet.  */
   if (sig->version >= 5 && (sig->sig_class == 0x00 || sig->sig_class == 0x01))
     {
@@ -401,7 +415,7 @@ hash_sigversion_to_magic (gcry_md_hd_t md, const PKT_signature *sig,
   i = 0;
   buf[i++] = sig->version;  /* Hash convention version.  */
   buf[i++] = 0xff;          /* Not any sig type value.   */
-  if (sig->version >= 5)
+  if (sig->version >= 5 && sig->version != 6)
     {
       /* Note: We don't hashed any data larger than 2^32 and thus we
        * can always use 0 here.  See also note below.  */
@@ -539,6 +553,12 @@ do_sign (ctrl_t ctrl, PKT_public_key *pksk, PKT_signature *sig,
           err = sexp_extract_param_sos (s_sigval, "r", &sig->data[0]);
           if (!err)
             err = sexp_extract_param_sos (s_sigval, "s", &sig->data[1]);
+        }
+      else if (pksk->pubkey_algo == PUBKEY_ALGO_ED25519)
+        {
+          sig->data[0] = get_r_s_mpi_from_sexp (s_sigval);
+          if (!sig->data[0])
+            err = gpg_error (GPG_ERR_NO_OBJ);
         }
       else
         {
@@ -990,6 +1010,9 @@ write_signature_packets (ctrl_t ctrl,
       if (opt.compliance == CO_DE_VS
           && gnupg_rng_is_compliant (CO_DE_VS))
         with_manu = 23;  /* FIXME: Also check that the algos are compliant?*/
+      else if (opt.compliance == CO_FIPS
+          && gnupg_rng_is_compliant (CO_FIPS))
+        with_manu = 140;
       else if (!(opt.compat_flags & COMPAT_NO_MANU))
         with_manu = 1;
       else
@@ -1864,7 +1887,9 @@ make_keysig_packet (ctrl_t ctrl,
               || sigclass == SIGCLASS_CERTREV
               || sigclass == SIGCLASS_SUBREV );
 
-  if (pksk->version >= 5)
+  if (pksk->version == 6 && RFC9980)
+    sigversion = 6;
+  else if (pksk->version >= 5)
     sigversion = 5;
   else
     sigversion = 4;
@@ -1884,6 +1909,10 @@ make_keysig_packet (ctrl_t ctrl,
       else
         digest_algo = DIGEST_ALGO_SHA256;
     }
+  else if (pksk->pubkey_algo == PUBKEY_ALGO_ED25519)
+    {
+      digest_algo = DIGEST_ALGO_SHA256;
+    }
   else /* Use the default.  */
     digest_algo = DEFAULT_DIGEST_ALGO;
 
@@ -1895,15 +1924,17 @@ make_keysig_packet (ctrl_t ctrl,
 
   if (gcry_md_open (&md, digest_algo, 0))
     BUG ();
+  if  (DBG_HASHING)
+    gcry_md_debug (md, "mkkeysig");
 
   /* Hash the public key certificate. */
-  hash_public_key (md, pk);
+  hash_public_key (md, pk, NULL);
 
   if (sigclass == SIGCLASS_SUBKEY || sigclass == SIGCLASS_BACKSIG
       || sigclass == SIGCLASS_SUBREV)
     {
       /* Hash the subkey binding/backsig/revocation.  */
-      hash_public_key (md, subpk);
+      hash_public_key (md, subpk, NULL);
       if ((subpk->pubkey_usage & PUBKEY_USAGE_RENC))
         signhints |= SIGNHINT_ADSK;
     }
@@ -1946,6 +1977,9 @@ make_keysig_packet (ctrl_t ctrl,
       if (opt.compliance == CO_DE_VS
           && gnupg_rng_is_compliant (CO_DE_VS))
         with_manu = 23;  /* Always in de-vs mode.  */
+      else if (opt.compliance == CO_FIPS
+               && gnupg_rng_is_compliant (CO_FIPS))
+        with_manu = 140;
       else if (!(opt.compat_flags & COMPAT_NO_MANU))
         with_manu = 1;
     }
@@ -2032,10 +2066,10 @@ update_keysig_packet (ctrl_t ctrl,
     BUG ();
 
   /* Hash the public key certificate and the user id. */
-  hash_public_key (md, pk);
+  hash_public_key (md, pk, NULL);
 
   if (orig_sig->sig_class == 0x18)
-    hash_public_key (md, subpk);
+    hash_public_key (md, subpk, orig_sig);
   else
     hash_uid (md, orig_sig->version, uid);
 
